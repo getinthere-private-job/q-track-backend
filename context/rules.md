@@ -145,3 +145,5 @@ public class Resp<T> {
 }
 
 ### 15. 서비스에서 DTO로 변환해서 컨트롤러에 응답하기
+
+### 16. lazy loading필요한 쿼리는 미리 join 해서 가져오기
