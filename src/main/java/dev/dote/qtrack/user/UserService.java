@@ -18,29 +18,32 @@ public class UserService {
     }
 
     @Transactional
-    public User signup(String username, String password, Role role) {
+    public UserResponse.Signup signup(String username, String password, Role role) {
         if (userRepository.existsByUsername(username)) {
             throw new Exception400("이미 존재하는 사용자명입니다: " + username);
         }
 
         String encodedPassword = passwordEncoder.encode(password);
         User user = new User(username, encodedPassword, role);
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return new UserResponse.Signup(savedUser.getId(), savedUser.getUsername(), savedUser.getRole());
     }
 
-    public User login(String username, String password) {
-        User user = findByUsername(username);
+    public UserResponse.Get login(String username, String password) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new Exception401("사용자명 또는 비밀번호가 잘못되었습니다."));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new Exception401("비밀번호가 일치하지 않습니다");
+            throw new Exception401("사용자명 또는 비밀번호가 잘못되었습니다.");
         }
 
-        return user;
+        return new UserResponse.Get(user.getId(), user.getUsername(), user.getRole());
     }
 
-    public User findById(Long id) {
-        return userRepository.findById(id)
+    public UserResponse.Get findById(Long id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new Exception400("사용자를 찾을 수 없습니다: " + id));
+        return new UserResponse.Get(user.getId(), user.getUsername(), user.getRole());
     }
 
     public User findByUsername(String username) {

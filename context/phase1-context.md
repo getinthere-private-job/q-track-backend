@@ -247,7 +247,7 @@ SystemCode (시스템 코드) - 업계 평균, 임계값 등 시스템 설정
 | id | BIGINT | 공정 고유 ID | 1, 2, 3 |
 | code | VARCHAR(10) | 공정 코드 (UNIQUE) | "W", "P", "검" |
 | name | VARCHAR(50) | 공정 이름 | "작업", "제조", "검사" |
-| `order` | INT | 공정 순서 (UNIQUE) | 1, 2, 3 |
+| sequence | INT | 공정 순서 (UNIQUE) | 1, 2, 3 |
 
 #### 3. DailyProduction (일별 생산)
 
@@ -310,7 +310,7 @@ CREATE TABLE process (
     code VARCHAR(10) NOT NULL UNIQUE,
     name VARCHAR(50) NOT NULL,
     description TEXT,
-    `order` INT NOT NULL UNIQUE,
+    sequence INT NOT NULL UNIQUE,
     createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -394,7 +394,7 @@ DELIMITER ;
 
 ```sql
 -- Process (공정) 초기 데이터
-INSERT INTO process (code, name, description, `order`) VALUES
+INSERT INTO process (code, name, description, sequence) VALUES
 ('W', '작업', '초기 가공 작업 공정', 1),
 ('P', '제조', '특정 제조 공정', 2),
 ('검', '검사', '품질 검사 및 검증 공정', 3);

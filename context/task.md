@@ -99,7 +99,7 @@
 
 #### 4.1 Process (공정) 기능
 - [ ] `process/Process.java` 엔티티 생성
-  - 필드: `id`, `code`, `name`, `description`, `order`, `createdAt`, `updatedAt`
+  - 필드: `id`, `code`, `name`, `description`, `sequence`, `createdAt`, `updatedAt`
   - 테이블명: `process_tb`
 - [ ] `process/ProcessRepository.java` 생성
 - [ ] `process/ProcessService.java` 생성

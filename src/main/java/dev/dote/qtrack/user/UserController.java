@@ -19,23 +19,21 @@ public class UserController {
 
     @PostMapping("/signup")
     public ResponseEntity<Resp<UserResponse.Signup>> signup(@Valid @RequestBody UserRequest.Signup request) {
-        User user = userService.signup(request.username(), request.password(), request.role());
-        UserResponse.Signup response = new UserResponse.Signup(user.getId(), user.getUsername(), user.getRole());
+        UserResponse.Signup response = userService.signup(request.username(), request.password(), request.role());
         return Resp.ok(response);
     }
 
     @PostMapping("/login")
     public ResponseEntity<Resp<UserResponse.Login>> login(@Valid @RequestBody UserRequest.Login request) {
-        User user = userService.login(request.username(), request.password());
-        String token = jwtUtil.generateToken(user.getId(), user.getRole());
-        UserResponse.Login response = new UserResponse.Login(token, user.getId(), user.getUsername(), user.getRole());
+        UserResponse.Get userDto = userService.login(request.username(), request.password());
+        String token = jwtUtil.generateToken(userDto.id(), userDto.role());
+        UserResponse.Login response = new UserResponse.Login(token, userDto.id(), userDto.username(), userDto.role());
         return Resp.ok(response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Resp<UserResponse.Get>> findById(@PathVariable Long id) {
-        User user = userService.findById(id);
-        UserResponse.Get response = new UserResponse.Get(user.getId(), user.getUsername(), user.getRole());
+        UserResponse.Get response = userService.findById(id);
         return Resp.ok(response);
     }
 }

@@ -143,3 +143,5 @@ public class Resp<T> {
         return new ResponseEntity<>(resp, status);
     }
 }
+
+### 15. 서비스에서 DTO로 변환해서 컨트롤러에 응답하기

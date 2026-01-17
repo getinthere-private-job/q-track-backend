@@ -160,7 +160,7 @@ class UserControllerTest {
                 // then
                 result.andExpect(status().isUnauthorized())
                                 .andExpect(jsonPath("$.status").value(401))
-                                .andExpect(jsonPath("$.msg", containsString("비밀번호가 일치하지 않습니다")));
+                                .andExpect(jsonPath("$.msg", containsString("사용자명 또는 비밀번호가 잘못되었습니다")));
         }
 
         @Test
@@ -176,8 +176,8 @@ class UserControllerTest {
                                                 .content(requestBody));
 
                 // then
-                result.andExpect(status().isBadRequest())
-                                .andExpect(jsonPath("$.status").value(400))
-                                .andExpect(jsonPath("$.msg", containsString("사용자를 찾을 수 없습니다")));
+                result.andExpect(status().isUnauthorized())
+                                .andExpect(jsonPath("$.status").value(401))
+                                .andExpect(jsonPath("$.msg", containsString("사용자명 또는 비밀번호가 잘못되었습니다")));
         }
 }
