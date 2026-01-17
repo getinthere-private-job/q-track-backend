@@ -3,19 +3,22 @@ package dev.dote.qtrack.user;
 import dev.dote.qtrack._core.security.JwtUtil;
 import dev.dote.qtrack._core.util.Resp;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 사용자 관리 API
+ * - 사용자 회원가입 및 로그인 기능 제공
+ * - 사용자 정보 조회 기능
+ * - JWT 토큰 기반 인증 처리
+ */
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
-
-    public UserController(UserService userService, JwtUtil jwtUtil) {
-        this.userService = userService;
-        this.jwtUtil = jwtUtil;
-    }
 
     @PostMapping("/signup")
     public ResponseEntity<Resp<UserResponse.Signup>> signup(@Valid @RequestBody UserRequest.Signup request) {

@@ -1,19 +1,22 @@
 package dev.dote.qtrack.item;
 
 import dev.dote.qtrack._core.errors.ex.Exception400;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * 부품 비즈니스 로직 처리
+ * - 부품 조회, 생성, 수정, 삭제 기능
+ * - 부품 코드 중복 검증
+ */
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ItemService {
     private final ItemRepository itemRepository;
-
-    public ItemService(ItemRepository itemRepository) {
-        this.itemRepository = itemRepository;
-    }
 
     public List<ItemResponse.List> findAll() {
         return itemRepository.findAll().stream()

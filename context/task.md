@@ -221,6 +221,9 @@
   - 품질 기록 생성 API (POST /api/quality-records) - 권한: USER, MANAGER, ADMIN
   - 품질 기록 수정 API (PUT /api/quality-records/{id}) - 권한: USER, MANAGER, ADMIN
   - 품질 기록 삭제 API (DELETE /api/quality-records/{id}) - 권한: MANAGER, ADMIN
+  - 품질 기록 평가 API (PUT /api/quality-records/{id}/evaluate) - 권한: USER, MANAGER, ADMIN
+    - 로그인한 사용자가 전문가 평가를 남김
+    - `evaluatedBy`는 User 외래키로 연결 (로그인한 사용자 ID)
 
 #### 7.2 NG 비율 자동 계산 (DB 트리거 또는 JPA 이벤트)
 - [ ] DB 트리거 생성 (선택사항) 또는
@@ -239,6 +242,9 @@
   - `evaluationRequired` 계산 로직 테스트
     - NG 비율 임계값 초과 시 평가 필요 플래그 설정 테스트
     - 전일 대비 NG 비율 급증 시 평가 필요 플래그 설정 테스트
+  - 품질 기록 평가 API 테스트 (PUT /api/quality-records/{id}/evaluate)
+    - 로그인한 사용자가 평가 남기기 테스트
+    - 평가자 정보(evaluatedBy)가 User 외래키로 저장되는지 테스트
 
 ---
 

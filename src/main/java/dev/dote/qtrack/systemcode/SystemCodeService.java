@@ -1,19 +1,23 @@
 package dev.dote.qtrack.systemcode;
 
 import dev.dote.qtrack._core.errors.ex.Exception400;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * 시스템 코드 비즈니스 로직 처리
+ * - 시스템 코드 조회 기능
+ * - 코드 그룹별 조회
+ * - 시스템 설정값 조회 (getCodeValue)
+ */
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class SystemCodeService {
     private final SystemCodeRepository systemCodeRepository;
-
-    public SystemCodeService(SystemCodeRepository systemCodeRepository) {
-        this.systemCodeRepository = systemCodeRepository;
-    }
 
     public List<SystemCodeResponse.List> findAll() {
         return systemCodeRepository.findAll().stream()

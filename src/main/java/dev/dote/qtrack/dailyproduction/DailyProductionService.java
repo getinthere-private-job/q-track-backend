@@ -3,28 +3,27 @@ package dev.dote.qtrack.dailyproduction;
 import dev.dote.qtrack._core.errors.ex.Exception400;
 import dev.dote.qtrack.item.Item;
 import dev.dote.qtrack.item.ItemRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * 일별 생산 데이터 비즈니스 로직 처리
+ * - 일별 생산 데이터 조회, 생성, 수정, 삭제 기능
+ * - 부품별 일일 생산 수량 관리 및 검증
+ */
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class DailyProductionService {
     private final DailyProductionRepository dailyProductionRepository;
     private final ItemRepository itemRepository;
 
-    public DailyProductionService(
-            DailyProductionRepository dailyProductionRepository,
-            ItemRepository itemRepository
-    ) {
-        this.dailyProductionRepository = dailyProductionRepository;
-        this.itemRepository = itemRepository;
-    }
-
     public List<DailyProductionResponse.List> findAll() {
-        return dailyProductionRepository.findAll().stream()
+        return dailyProductionRepository.findAllWithItem().stream()
                 .map(dp -> new DailyProductionResponse.List(
                         dp.getId(),
                         dp.getItem().getId(),
@@ -34,7 +33,7 @@ public class DailyProductionService {
     }
 
     public DailyProductionResponse.Get findById(Long id) {
-        DailyProduction dailyProduction = dailyProductionRepository.findById(id)
+        DailyProduction dailyProduction = dailyProductionRepository.findByIdWithItem(id)
                 .orElseThrow(() -> new Exception400("일별 생산 데이터를 찾을 수 없습니다: " + id));
         return new DailyProductionResponse.Get(
                 dailyProduction.getId(),
@@ -71,7 +70,7 @@ public class DailyProductionService {
             throw new Exception400("총 생산 수량은 0 이상이어야 합니다: " + totalQuantity);
         }
 
-        DailyProduction dailyProduction = dailyProductionRepository.findById(id)
+        DailyProduction dailyProduction = dailyProductionRepository.findByIdWithItem(id)
                 .orElseThrow(() -> new Exception400("일별 생산 데이터를 찾을 수 없습니다: " + id));
 
         dailyProduction.update(totalQuantity);

@@ -1,9 +1,15 @@
 package dev.dote.qtrack.dailyproduction;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,11 +24,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import dev.dote.qtrack._core.security.JwtUtil;
 import dev.dote.qtrack.item.Item;
 import dev.dote.qtrack.item.ItemRepository;
@@ -30,244 +34,242 @@ import dev.dote.qtrack.user.Role;
 import dev.dote.qtrack.user.User;
 import dev.dote.qtrack.user.UserRepository;
 
-import java.time.LocalDate;
-
 @SpringBootTest
 @ActiveProfiles("dev")
 @Transactional
 class DailyProductionControllerTest {
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
+        @Autowired
+        private WebApplicationContext webApplicationContext;
 
-    private MockMvc mvc;
+        private MockMvc mvc;
 
-    private ObjectMapper om = new ObjectMapper().registerModule(new JavaTimeModule());
+        private ObjectMapper om = new ObjectMapper().registerModule(new JavaTimeModule());
 
-    @Autowired
-    private DailyProductionRepository dailyProductionRepository;
+        @Autowired
+        private DailyProductionRepository dailyProductionRepository;
 
-    @Autowired
-    private ItemRepository itemRepository;
+        @Autowired
+        private ItemRepository itemRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+        @Autowired
+        private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+        @Autowired
+        private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+        @Autowired
+        private JwtUtil jwtUtil;
 
-    private String userToken;
-    private String managerToken;
-    private String adminToken;
-    private Item testItem;
+        private String userToken;
+        private String managerToken;
+        private String adminToken;
+        private Item testItem;
 
-    @BeforeEach
-    void setUp() {
-        dailyProductionRepository.deleteAll();
-        itemRepository.deleteAll();
-        userRepository.deleteAll();
-        mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .apply(springSecurity())
-                .build();
+        @BeforeEach
+        void setUp() {
+                dailyProductionRepository.deleteAll();
+                itemRepository.deleteAll();
+                userRepository.deleteAll();
+                mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                                .apply(springSecurity())
+                                .build();
 
-        // 테스트용 사용자 생성 및 토큰 생성
-        User user = new User("testuser", passwordEncoder.encode("password123"), Role.USER);
-        User manager = new User("testmanager", passwordEncoder.encode("password123"), Role.MANAGER);
-        User admin = new User("testadmin", passwordEncoder.encode("password123"), Role.ADMIN);
-        userRepository.save(user);
-        userRepository.save(manager);
-        userRepository.save(admin);
+                // 테스트용 사용자 생성 및 토큰 생성
+                User user = new User("testuser", passwordEncoder.encode("password123"), Role.USER);
+                User manager = new User("testmanager", passwordEncoder.encode("password123"), Role.MANAGER);
+                User admin = new User("testadmin", passwordEncoder.encode("password123"), Role.ADMIN);
+                userRepository.save(user);
+                userRepository.save(manager);
+                userRepository.save(admin);
 
-        userToken = jwtUtil.generateToken(user.getId(), user.getRole());
-        managerToken = jwtUtil.generateToken(manager.getId(), manager.getRole());
-        adminToken = jwtUtil.generateToken(admin.getId(), admin.getRole());
+                userToken = jwtUtil.generateToken(user.getId(), user.getRole());
+                managerToken = jwtUtil.generateToken(manager.getId(), manager.getRole());
+                adminToken = jwtUtil.generateToken(admin.getId(), admin.getRole());
 
-        // 테스트용 부품 생성
-        testItem = new Item("ITEM001", "부품1", "부품1 설명", "카테고리1");
-        itemRepository.save(testItem);
-    }
+                // 테스트용 부품 생성
+                testItem = new Item("ITEM001", "부품1", "부품1 설명", "카테고리1");
+                itemRepository.save(testItem);
+        }
 
-    @Test
-    void findAll_test() throws Exception {
-        // given
-        LocalDate date1 = LocalDate.of(2025, 1, 15);
-        LocalDate date2 = LocalDate.of(2025, 1, 16);
-        DailyProduction dp1 = new DailyProduction(testItem, date1, 1000);
-        DailyProduction dp2 = new DailyProduction(testItem, date2, 2000);
-        dailyProductionRepository.save(dp1);
-        dailyProductionRepository.save(dp2);
+        @Test
+        void findAll_test() throws Exception {
+                // given
+                LocalDate date1 = LocalDate.of(2025, 1, 15);
+                LocalDate date2 = LocalDate.of(2025, 1, 16);
+                DailyProduction dp1 = new DailyProduction(testItem, date1, 1000);
+                DailyProduction dp2 = new DailyProduction(testItem, date2, 2000);
+                dailyProductionRepository.save(dp1);
+                dailyProductionRepository.save(dp2);
 
-        // when
-        ResultActions result = mvc.perform(
-                get("/api/daily-productions")
-                        .header("Authorization", "Bearer " + userToken));
+                // when
+                ResultActions result = mvc.perform(
+                                get("/api/daily-productions")
+                                                .header("Authorization", "Bearer " + userToken));
 
-        // then
-        result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.msg").value("성공"))
-                .andExpect(jsonPath("$.body").isArray())
-                .andExpect(jsonPath("$.body.length()").value(2));
-    }
+                // then
+                result.andExpect(status().isOk())
+                                .andExpect(jsonPath("$.status").value(200))
+                                .andExpect(jsonPath("$.msg").value("성공"))
+                                .andExpect(jsonPath("$.body").isArray())
+                                .andExpect(jsonPath("$.body.length()").value(2));
+        }
 
-    @Test
-    void findById_test() throws Exception {
-        // given
-        LocalDate date = LocalDate.of(2025, 1, 15);
-        DailyProduction dp = new DailyProduction(testItem, date, 1000);
-        dailyProductionRepository.save(dp);
-        Long dpId = dp.getId();
+        @Test
+        void findById_test() throws Exception {
+                // given
+                LocalDate date = LocalDate.of(2025, 1, 15);
+                DailyProduction dp = new DailyProduction(testItem, date, 1000);
+                dailyProductionRepository.save(dp);
+                Long dpId = dp.getId();
 
-        // when
-        ResultActions result = mvc.perform(
-                get("/api/daily-productions/" + dpId)
-                        .header("Authorization", "Bearer " + userToken));
+                // when
+                ResultActions result = mvc.perform(
+                                get("/api/daily-productions/" + dpId)
+                                                .header("Authorization", "Bearer " + userToken));
 
-        // then
-        result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.msg").value("성공"))
-                .andExpect(jsonPath("$.body.id").value(dpId.intValue()))
-                .andExpect(jsonPath("$.body.itemId").value(testItem.getId().intValue()))
-                .andExpect(jsonPath("$.body.productionDate").value("2025-01-15"))
-                .andExpect(jsonPath("$.body.totalQuantity").value(1000));
-    }
+                // then
+                result.andExpect(status().isOk())
+                                .andExpect(jsonPath("$.status").value(200))
+                                .andExpect(jsonPath("$.msg").value("성공"))
+                                .andExpect(jsonPath("$.body.id").value(dpId.intValue()))
+                                .andExpect(jsonPath("$.body.itemId").value(testItem.getId().intValue()))
+                                .andExpect(jsonPath("$.body.productionDate").value("2025-01-15"))
+                                .andExpect(jsonPath("$.body.totalQuantity").value(1000));
+        }
 
-    @Test
-    void create_as_user_test() throws Exception {
-        // given
-        LocalDate date = LocalDate.of(2025, 1, 15);
-        DailyProductionRequest.Create request = new DailyProductionRequest.Create(
-                testItem.getId(),
-                date,
-                1000);
-        String requestBody = om.writeValueAsString(request);
+        @Test
+        void create_as_user_test() throws Exception {
+                // given
+                LocalDate date = LocalDate.of(2025, 1, 15);
+                DailyProductionRequest.Create request = new DailyProductionRequest.Create(
+                                testItem.getId(),
+                                date,
+                                1000);
+                String requestBody = om.writeValueAsString(request);
 
-        // when
-        ResultActions result = mvc.perform(
-                post("/api/daily-productions")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody)
-                        .header("Authorization", "Bearer " + userToken));
+                // when
+                ResultActions result = mvc.perform(
+                                post("/api/daily-productions")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(requestBody)
+                                                .header("Authorization", "Bearer " + userToken));
 
-        // then
-        result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.body.id").exists())
-                .andExpect(jsonPath("$.body.itemId").value(testItem.getId().intValue()))
-                .andExpect(jsonPath("$.body.productionDate").value("2025-01-15"))
-                .andExpect(jsonPath("$.body.totalQuantity").value(1000));
-    }
+                // then
+                result.andExpect(status().isOk())
+                                .andExpect(jsonPath("$.status").value(200))
+                                .andExpect(jsonPath("$.body.id").exists())
+                                .andExpect(jsonPath("$.body.itemId").value(testItem.getId().intValue()))
+                                .andExpect(jsonPath("$.body.productionDate").value("2025-01-15"))
+                                .andExpect(jsonPath("$.body.totalQuantity").value(1000));
+        }
 
-    @Test
-    void create_duplicate_item_date_test() throws Exception {
-        // given
-        LocalDate date = LocalDate.of(2025, 1, 15);
-        DailyProduction existing = new DailyProduction(testItem, date, 1000);
-        dailyProductionRepository.save(existing);
+        @Test
+        void create_duplicate_item_date_test() throws Exception {
+                // given
+                LocalDate date = LocalDate.of(2025, 1, 15);
+                DailyProduction existing = new DailyProduction(testItem, date, 1000);
+                dailyProductionRepository.save(existing);
 
-        DailyProductionRequest.Create request = new DailyProductionRequest.Create(
-                testItem.getId(),
-                date,
-                2000);
-        String requestBody = om.writeValueAsString(request);
+                DailyProductionRequest.Create request = new DailyProductionRequest.Create(
+                                testItem.getId(),
+                                date,
+                                2000);
+                String requestBody = om.writeValueAsString(request);
 
-        // when
-        ResultActions result = mvc.perform(
-                post("/api/daily-productions")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody)
-                        .header("Authorization", "Bearer " + userToken));
+                // when
+                ResultActions result = mvc.perform(
+                                post("/api/daily-productions")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(requestBody)
+                                                .header("Authorization", "Bearer " + userToken));
 
-        // then
-        result.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.msg", containsString("이미 존재하는 일별 생산 데이터")));
-    }
+                // then
+                result.andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.status").value(400))
+                                .andExpect(jsonPath("$.msg", containsString("이미 존재하는 일별 생산 데이터")));
+        }
 
-    @Test
-    void create_invalid_item_id_test() throws Exception {
-        // given
-        LocalDate date = LocalDate.of(2025, 1, 15);
-        DailyProductionRequest.Create request = new DailyProductionRequest.Create(
-                999L,
-                date,
-                1000);
-        String requestBody = om.writeValueAsString(request);
+        @Test
+        void create_invalid_item_id_test() throws Exception {
+                // given
+                LocalDate date = LocalDate.of(2025, 1, 15);
+                DailyProductionRequest.Create request = new DailyProductionRequest.Create(
+                                999L,
+                                date,
+                                1000);
+                String requestBody = om.writeValueAsString(request);
 
-        // when
-        ResultActions result = mvc.perform(
-                post("/api/daily-productions")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody)
-                        .header("Authorization", "Bearer " + userToken));
+                // when
+                ResultActions result = mvc.perform(
+                                post("/api/daily-productions")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(requestBody)
+                                                .header("Authorization", "Bearer " + userToken));
 
-        // then
-        result.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.msg", containsString("부품을 찾을 수 없습니다")));
-    }
+                // then
+                result.andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.status").value(400))
+                                .andExpect(jsonPath("$.msg", containsString("부품을 찾을 수 없습니다")));
+        }
 
-    @Test
-    void update_as_user_test() throws Exception {
-        // given
-        LocalDate date = LocalDate.of(2025, 1, 15);
-        DailyProduction dp = new DailyProduction(testItem, date, 1000);
-        dailyProductionRepository.save(dp);
-        Long dpId = dp.getId();
+        @Test
+        void update_as_user_test() throws Exception {
+                // given
+                LocalDate date = LocalDate.of(2025, 1, 15);
+                DailyProduction dp = new DailyProduction(testItem, date, 1000);
+                dailyProductionRepository.save(dp);
+                Long dpId = dp.getId();
 
-        DailyProductionRequest.Update request = new DailyProductionRequest.Update(2000);
-        String requestBody = om.writeValueAsString(request);
+                DailyProductionRequest.Update request = new DailyProductionRequest.Update(2000);
+                String requestBody = om.writeValueAsString(request);
 
-        // when
-        ResultActions result = mvc.perform(
-                put("/api/daily-productions/" + dpId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody)
-                        .header("Authorization", "Bearer " + userToken));
+                // when
+                ResultActions result = mvc.perform(
+                                put("/api/daily-productions/" + dpId)
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(requestBody)
+                                                .header("Authorization", "Bearer " + userToken));
 
-        // then
-        result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.body.totalQuantity").value(2000));
-    }
+                // then
+                result.andExpect(status().isOk())
+                                .andExpect(jsonPath("$.status").value(200))
+                                .andExpect(jsonPath("$.body.totalQuantity").value(2000));
+        }
 
-    @Test
-    void delete_as_manager_test() throws Exception {
-        // given
-        LocalDate date = LocalDate.of(2025, 1, 15);
-        DailyProduction dp = new DailyProduction(testItem, date, 1000);
-        dailyProductionRepository.save(dp);
-        Long dpId = dp.getId();
+        @Test
+        void delete_as_manager_test() throws Exception {
+                // given
+                LocalDate date = LocalDate.of(2025, 1, 15);
+                DailyProduction dp = new DailyProduction(testItem, date, 1000);
+                dailyProductionRepository.save(dp);
+                Long dpId = dp.getId();
 
-        // when
-        ResultActions result = mvc.perform(
-                delete("/api/daily-productions/" + dpId)
-                        .header("Authorization", "Bearer " + managerToken));
+                // when
+                ResultActions result = mvc.perform(
+                                delete("/api/daily-productions/" + dpId)
+                                                .header("Authorization", "Bearer " + managerToken));
 
-        // then
-        result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.body.id").value(dpId.intValue()));
-    }
+                // then
+                result.andExpect(status().isOk())
+                                .andExpect(jsonPath("$.status").value(200))
+                                .andExpect(jsonPath("$.body.id").value(dpId.intValue()));
+        }
 
-    @Test
-    void delete_as_user_forbidden_test() throws Exception {
-        // given
-        LocalDate date = LocalDate.of(2025, 1, 15);
-        DailyProduction dp = new DailyProduction(testItem, date, 1000);
-        dailyProductionRepository.save(dp);
-        Long dpId = dp.getId();
+        @Test
+        void delete_as_user_forbidden_test() throws Exception {
+                // given
+                LocalDate date = LocalDate.of(2025, 1, 15);
+                DailyProduction dp = new DailyProduction(testItem, date, 1000);
+                dailyProductionRepository.save(dp);
+                Long dpId = dp.getId();
 
-        // when
-        ResultActions result = mvc.perform(
-                delete("/api/daily-productions/" + dpId)
-                        .header("Authorization", "Bearer " + userToken));
+                // when
+                ResultActions result = mvc.perform(
+                                delete("/api/daily-productions/" + dpId)
+                                                .header("Authorization", "Bearer " + userToken));
 
-        // then
-        result.andExpect(status().isForbidden());
-    }
+                // then
+                result.andExpect(status().isForbidden());
+        }
 }

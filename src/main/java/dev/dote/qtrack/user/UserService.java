@@ -2,20 +2,23 @@ package dev.dote.qtrack.user;
 
 import dev.dote.qtrack._core.errors.ex.Exception400;
 import dev.dote.qtrack._core.errors.ex.Exception401;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 사용자 비즈니스 로직 처리
+ * - 사용자 회원가입 (비밀번호 암호화)
+ * - 사용자 로그인 (비밀번호 검증)
+ * - 사용자 정보 조회
+ */
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Transactional
     public UserResponse.Signup signup(String username, String password, Role role) {

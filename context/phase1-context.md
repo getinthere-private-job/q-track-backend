@@ -274,7 +274,7 @@ SystemCode (시스템 코드) - 업계 평균, 임계값 등 시스템 설정
 | evaluationRequired | BOOLEAN | 평가 필요 여부 - **애플리케이션 로직으로 계산** | TRUE, FALSE |
 | evaluationReason | VARCHAR(200) | 평가 필요 이유 | "임계값 초과" |
 | evaluatedAt | TIMESTAMP | 평가 일시 | 2025-01-15 14:30:00 |
-| evaluatedBy | VARCHAR(50) | 평가자 | "expert001" |
+| evaluatedBy | BIGINT | 평가자 ID (FK → User.id) | 1, 2, 3 |
 | **UNIQUE**: (dailyProductionId, processId) | | 하루에 같은 공정은 하나만 | |
 
 #### 5. SystemCode (시스템 코드)
@@ -341,14 +341,16 @@ CREATE TABLE quality_record (
     evaluationRequired BOOLEAN NOT NULL DEFAULT FALSE,
     evaluationReason VARCHAR(200),
     evaluatedAt TIMESTAMP NULL,
-    evaluatedBy VARCHAR(50),
+    evaluatedBy BIGINT,
     createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE INDEX idx_quality_record_daily_process (dailyProductionId, processId),
     CONSTRAINT fk_quality_record_daily_production
         FOREIGN KEY (dailyProductionId) REFERENCES daily_production(id) ON DELETE CASCADE,
     CONSTRAINT fk_quality_record_process
-        FOREIGN KEY (processId) REFERENCES process(id) ON DELETE RESTRICT
+        FOREIGN KEY (processId) REFERENCES process(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_quality_record_evaluated_by
+        FOREIGN KEY (evaluatedBy) REFERENCES user_tb(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- SystemCode (시스템 코드) 테이블

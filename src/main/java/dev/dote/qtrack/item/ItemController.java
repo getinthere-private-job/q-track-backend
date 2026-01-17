@@ -2,20 +2,23 @@ package dev.dote.qtrack.item;
 
 import dev.dote.qtrack._core.util.Resp;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 부품 관리 API
+ * - 부품의 CRUD 기능 제공
+ * - 부품 정보 관리 및 권한 기반 접근 제어
+ */
 @RestController
 @RequestMapping("/api/items")
+@RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-
-    public ItemController(ItemService itemService) {
-        this.itemService = itemService;
-    }
 
     @GetMapping
     public ResponseEntity<Resp<List<ItemResponse.List>>> findAll() {
