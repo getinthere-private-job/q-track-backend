@@ -1,9 +1,14 @@
 package dev.dote.qtrack.systemcode;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,16 +22,20 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-
 import dev.dote.qtrack._core.security.JwtUtil;
 import dev.dote.qtrack.user.Role;
 import dev.dote.qtrack.user.User;
 import dev.dote.qtrack.user.UserRepository;
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.restdocs.operation.preprocess.Preprocessors;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 @SpringBootTest
 @ActiveProfiles("dev")
 @Transactional
+@ExtendWith(RestDocumentationExtension.class)
 class SystemCodeControllerTest {
 
     @Autowired
@@ -49,10 +58,15 @@ class SystemCodeControllerTest {
     private String token;
 
     @BeforeEach
-    void setUp() {
+    void setUp(RestDocumentationContextProvider restDocumentation) {
         systemCodeRepository.deleteAll();
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                 .apply(springSecurity())
+                .apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
+                        .operationPreprocessors()
+                        .withRequestDefaults(Preprocessors.prettyPrint())
+                        .withResponseDefaults(Preprocessors.prettyPrint())
+                        .and())
                 .build();
 
         // 테스트용 사용자 생성 및 토큰 생성
@@ -81,7 +95,20 @@ class SystemCodeControllerTest {
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.msg").value("성공"))
                 .andExpect(jsonPath("$.body").isArray())
-                .andExpect(jsonPath("$.body.length()").value(3));
+                .andExpect(jsonPath("$.body.length()").value(3))
+                .andDo(MockMvcRestDocumentation.document("systemcode-findAll",
+                        requestHeaders(
+                                headerWithName("Authorization").description("JWT 토큰 (Bearer {token})")),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("msg").description("응답 메시지"),
+                                fieldWithPath("body[]").description("시스템 코드 목록"),
+                                fieldWithPath("body[].id").description("시스템 코드 ID"),
+                                fieldWithPath("body[].codeGroup").description("코드 그룹"),
+                                fieldWithPath("body[].codeKey").description("코드 키"),
+                                fieldWithPath("body[].codeValue").description("코드 값"),
+                                fieldWithPath("body[].description").description("설명"),
+                                fieldWithPath("body[].isActive").description("활성화 여부"))));
     }
 
     @Test
@@ -107,7 +134,22 @@ class SystemCodeControllerTest {
                 .andExpect(jsonPath("$.body").isArray())
                 .andExpect(jsonPath("$.body.length()").value(2))
                 .andExpect(jsonPath("$.body[0].codeGroup").value("INDUSTRY_AVERAGE"))
-                .andExpect(jsonPath("$.body[1].codeGroup").value("INDUSTRY_AVERAGE"));
+                .andExpect(jsonPath("$.body[1].codeGroup").value("INDUSTRY_AVERAGE"))
+                .andDo(MockMvcRestDocumentation.document("systemcode-findAll-by-codeGroup",
+                        queryParameters(
+                                parameterWithName("codeGroup").description("코드 그룹 (선택 사항)")),
+                        requestHeaders(
+                                headerWithName("Authorization").description("JWT 토큰 (Bearer {token})")),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("msg").description("응답 메시지"),
+                                fieldWithPath("body[]").description("시스템 코드 목록"),
+                                fieldWithPath("body[].id").description("시스템 코드 ID"),
+                                fieldWithPath("body[].codeGroup").description("코드 그룹"),
+                                fieldWithPath("body[].codeKey").description("코드 키"),
+                                fieldWithPath("body[].codeValue").description("코드 값"),
+                                fieldWithPath("body[].description").description("설명"),
+                                fieldWithPath("body[].isActive").description("활성화 여부"))));
     }
 
     @Test

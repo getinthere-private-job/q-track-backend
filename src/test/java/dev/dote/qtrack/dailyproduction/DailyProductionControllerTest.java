@@ -2,12 +2,14 @@ package dev.dote.qtrack.dailyproduction;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 
 import java.time.LocalDate;
 
@@ -33,10 +35,16 @@ import dev.dote.qtrack.item.ItemRepository;
 import dev.dote.qtrack.user.Role;
 import dev.dote.qtrack.user.User;
 import dev.dote.qtrack.user.UserRepository;
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.restdocs.operation.preprocess.Preprocessors;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 @SpringBootTest
 @ActiveProfiles("dev")
 @Transactional
+@ExtendWith(RestDocumentationExtension.class)
 class DailyProductionControllerTest {
 
         @Autowired
@@ -67,12 +75,17 @@ class DailyProductionControllerTest {
         private Item testItem;
 
         @BeforeEach
-        void setUp() {
+        void setUp(RestDocumentationContextProvider restDocumentation) {
                 dailyProductionRepository.deleteAll();
                 itemRepository.deleteAll();
                 userRepository.deleteAll();
                 mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                                 .apply(springSecurity())
+                                .apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
+                                                .operationPreprocessors()
+                                                .withRequestDefaults(Preprocessors.prettyPrint())
+                                                .withResponseDefaults(Preprocessors.prettyPrint())
+                                                .and())
                                 .build();
 
                 // 테스트용 사용자 생성 및 토큰 생성
@@ -112,7 +125,21 @@ class DailyProductionControllerTest {
                                 .andExpect(jsonPath("$.status").value(200))
                                 .andExpect(jsonPath("$.msg").value("성공"))
                                 .andExpect(jsonPath("$.body").isArray())
-                                .andExpect(jsonPath("$.body.length()").value(2));
+                                .andExpect(jsonPath("$.body.length()").value(2))
+                                .andDo(MockMvcRestDocumentation.document("dailyproduction-findAll",
+                                                requestHeaders(
+                                                                headerWithName("Authorization").description("JWT 토큰 (Bearer {token})")
+                                                ),
+                                                responseFields(
+                                                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                                                fieldWithPath("msg").description("응답 메시지"),
+                                                                fieldWithPath("body[]").description("일별 생산 데이터 목록"),
+                                                                fieldWithPath("body[].id").description("일별 생산 데이터 ID"),
+                                                                fieldWithPath("body[].itemId").description("부품 ID"),
+                                                                fieldWithPath("body[].productionDate").description("생산일"),
+                                                                fieldWithPath("body[].totalQuantity").description("총 생산 수량")
+                                                )
+                                ));
         }
 
         @Test
@@ -125,7 +152,7 @@ class DailyProductionControllerTest {
 
                 // when
                 ResultActions result = mvc.perform(
-                                get("/api/daily-productions/" + dpId)
+                                get("/api/daily-productions/{id}", dpId)
                                                 .header("Authorization", "Bearer " + userToken));
 
                 // then
@@ -135,7 +162,23 @@ class DailyProductionControllerTest {
                                 .andExpect(jsonPath("$.body.id").value(dpId.intValue()))
                                 .andExpect(jsonPath("$.body.itemId").value(testItem.getId().intValue()))
                                 .andExpect(jsonPath("$.body.productionDate").value("2025-01-15"))
-                                .andExpect(jsonPath("$.body.totalQuantity").value(1000));
+                                .andExpect(jsonPath("$.body.totalQuantity").value(1000))
+                                .andDo(MockMvcRestDocumentation.document("dailyproduction-findById",
+                                                pathParameters(
+                                                                parameterWithName("id").description("일별 생산 데이터 ID")
+                                                ),
+                                                requestHeaders(
+                                                                headerWithName("Authorization").description("JWT 토큰 (Bearer {token})")
+                                                ),
+                                                responseFields(
+                                                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                                                fieldWithPath("msg").description("응답 메시지"),
+                                                                fieldWithPath("body.id").description("일별 생산 데이터 ID"),
+                                                                fieldWithPath("body.itemId").description("부품 ID"),
+                                                                fieldWithPath("body.productionDate").description("생산일"),
+                                                                fieldWithPath("body.totalQuantity").description("총 생산 수량")
+                                                )
+                                ));
         }
 
         @Test
@@ -161,7 +204,25 @@ class DailyProductionControllerTest {
                                 .andExpect(jsonPath("$.body.id").exists())
                                 .andExpect(jsonPath("$.body.itemId").value(testItem.getId().intValue()))
                                 .andExpect(jsonPath("$.body.productionDate").value("2025-01-15"))
-                                .andExpect(jsonPath("$.body.totalQuantity").value(1000));
+                                .andExpect(jsonPath("$.body.totalQuantity").value(1000))
+                                .andDo(MockMvcRestDocumentation.document("dailyproduction-create",
+                                                requestHeaders(
+                                                                headerWithName("Authorization").description("JWT 토큰 (Bearer {token})")
+                                                ),
+                                                requestFields(
+                                                                fieldWithPath("itemId").description("부품 ID"),
+                                                                fieldWithPath("productionDate").description("생산일 (yyyy-MM-dd)"),
+                                                                fieldWithPath("totalQuantity").description("총 생산 수량")
+                                                ),
+                                                responseFields(
+                                                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                                                fieldWithPath("msg").description("응답 메시지"),
+                                                                fieldWithPath("body.id").description("생성된 일별 생산 데이터 ID"),
+                                                                fieldWithPath("body.itemId").description("부품 ID"),
+                                                                fieldWithPath("body.productionDate").description("생산일"),
+                                                                fieldWithPath("body.totalQuantity").description("총 생산 수량")
+                                                )
+                                ));
         }
 
         @Test
@@ -226,7 +287,7 @@ class DailyProductionControllerTest {
 
                 // when
                 ResultActions result = mvc.perform(
-                                put("/api/daily-productions/" + dpId)
+                                put("/api/daily-productions/{id}", dpId)
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .content(requestBody)
                                                 .header("Authorization", "Bearer " + userToken));
@@ -234,7 +295,26 @@ class DailyProductionControllerTest {
                 // then
                 result.andExpect(status().isOk())
                                 .andExpect(jsonPath("$.status").value(200))
-                                .andExpect(jsonPath("$.body.totalQuantity").value(2000));
+                                .andExpect(jsonPath("$.body.totalQuantity").value(2000))
+                                .andDo(MockMvcRestDocumentation.document("dailyproduction-update",
+                                                pathParameters(
+                                                                parameterWithName("id").description("일별 생산 데이터 ID")
+                                                ),
+                                                requestHeaders(
+                                                                headerWithName("Authorization").description("JWT 토큰 (Bearer {token})")
+                                                ),
+                                                requestFields(
+                                                                fieldWithPath("totalQuantity").description("총 생산 수량")
+                                                ),
+                                                responseFields(
+                                                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                                                fieldWithPath("msg").description("응답 메시지"),
+                                                                fieldWithPath("body.id").description("일별 생산 데이터 ID"),
+                                                                fieldWithPath("body.itemId").description("부품 ID"),
+                                                                fieldWithPath("body.productionDate").description("생산일"),
+                                                                fieldWithPath("body.totalQuantity").description("총 생산 수량")
+                                                )
+                                ));
         }
 
         @Test
@@ -247,13 +327,26 @@ class DailyProductionControllerTest {
 
                 // when
                 ResultActions result = mvc.perform(
-                                delete("/api/daily-productions/" + dpId)
+                                delete("/api/daily-productions/{id}", dpId)
                                                 .header("Authorization", "Bearer " + managerToken));
 
                 // then
                 result.andExpect(status().isOk())
                                 .andExpect(jsonPath("$.status").value(200))
-                                .andExpect(jsonPath("$.body.id").value(dpId.intValue()));
+                                .andExpect(jsonPath("$.body.id").value(dpId.intValue()))
+                                .andDo(MockMvcRestDocumentation.document("dailyproduction-delete",
+                                                pathParameters(
+                                                                parameterWithName("id").description("일별 생산 데이터 ID")
+                                                ),
+                                                requestHeaders(
+                                                                headerWithName("Authorization").description("JWT 토큰 (Bearer {token}) - MANAGER 이상 권한 필요")
+                                                ),
+                                                responseFields(
+                                                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                                                fieldWithPath("msg").description("응답 메시지"),
+                                                                fieldWithPath("body.id").description("삭제된 일별 생산 데이터 ID")
+                                                )
+                                ));
         }
 
         @Test
@@ -266,7 +359,7 @@ class DailyProductionControllerTest {
 
                 // when
                 ResultActions result = mvc.perform(
-                                delete("/api/daily-productions/" + dpId)
+                                delete("/api/daily-productions/{id}", dpId)
                                                 .header("Authorization", "Bearer " + userToken));
 
                 // then

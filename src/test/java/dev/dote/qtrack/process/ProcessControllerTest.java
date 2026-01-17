@@ -1,9 +1,14 @@
 package dev.dote.qtrack.process;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,10 +28,16 @@ import dev.dote.qtrack._core.security.JwtUtil;
 import dev.dote.qtrack.user.Role;
 import dev.dote.qtrack.user.User;
 import dev.dote.qtrack.user.UserRepository;
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.restdocs.operation.preprocess.Preprocessors;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 @SpringBootTest
 @ActiveProfiles("dev")
 @Transactional
+@ExtendWith(RestDocumentationExtension.class)
 class ProcessControllerTest {
 
     @Autowired
@@ -49,10 +60,15 @@ class ProcessControllerTest {
     private String token;
 
     @BeforeEach
-    void setUp() {
+    void setUp(RestDocumentationContextProvider restDocumentation) {
         processRepository.deleteAll();
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                 .apply(springSecurity())
+                .apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
+                        .operationPreprocessors()
+                        .withRequestDefaults(Preprocessors.prettyPrint())
+                        .withResponseDefaults(Preprocessors.prettyPrint())
+                        .and())
                 .build();
 
         // 테스트용 사용자 생성 및 토큰 생성
@@ -85,7 +101,22 @@ class ProcessControllerTest {
                 .andExpect(jsonPath("$.body[0].code").value("W"))
                 .andExpect(jsonPath("$.body[0].name").value("작업"))
                 .andExpect(jsonPath("$.body[1].code").value("P"))
-                .andExpect(jsonPath("$.body[2].code").value("검"));
+                .andExpect(jsonPath("$.body[2].code").value("검"))
+                .andDo(MockMvcRestDocumentation.document("process-findAll",
+                        requestHeaders(
+                                headerWithName("Authorization").description("JWT 토큰 (Bearer {token})")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("msg").description("응답 메시지"),
+                                fieldWithPath("body[]").description("공정 목록"),
+                                fieldWithPath("body[].id").description("공정 ID"),
+                                fieldWithPath("body[].code").description("공정 코드"),
+                                fieldWithPath("body[].name").description("공정명"),
+                                fieldWithPath("body[].description").description("설명"),
+                                fieldWithPath("body[].sequence").description("순서")
+                        )
+                ));
     }
 
     @Test
@@ -97,7 +128,7 @@ class ProcessControllerTest {
 
         // when
         ResultActions result = mvc.perform(
-                get("/api/processes/" + processId)
+                get("/api/processes/{id}", processId)
                         .header("Authorization", "Bearer " + token));
 
         // then
@@ -108,7 +139,24 @@ class ProcessControllerTest {
                 .andExpect(jsonPath("$.body.code").value("W"))
                 .andExpect(jsonPath("$.body.name").value("작업"))
                 .andExpect(jsonPath("$.body.description").value("작업 공정"))
-                .andExpect(jsonPath("$.body.sequence").value(1));
+                .andExpect(jsonPath("$.body.sequence").value(1))
+                .andDo(MockMvcRestDocumentation.document("process-findById",
+                        pathParameters(
+                                parameterWithName("id").description("공정 ID")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization").description("JWT 토큰 (Bearer {token})")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("msg").description("응답 메시지"),
+                                fieldWithPath("body.id").description("공정 ID"),
+                                fieldWithPath("body.code").description("공정 코드"),
+                                fieldWithPath("body.name").description("공정명"),
+                                fieldWithPath("body.description").description("설명"),
+                                fieldWithPath("body.sequence").description("순서")
+                        )
+                ));
     }
 
     @Test
@@ -118,7 +166,7 @@ class ProcessControllerTest {
 
         // when
         ResultActions result = mvc.perform(
-                get("/api/processes/" + nonExistentId)
+                get("/api/processes/{id}", nonExistentId)
                         .header("Authorization", "Bearer " + token));
 
         // then

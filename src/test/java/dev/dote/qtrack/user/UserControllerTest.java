@@ -1,8 +1,6 @@
 package dev.dote.qtrack.user;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -20,13 +18,25 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.dote.qtrack._core.security.JwtUtil;
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.restdocs.operation.preprocess.Preprocessors;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 @SpringBootTest
 @ActiveProfiles("dev")
 @Transactional
+@ExtendWith(RestDocumentationExtension.class)
 class UserControllerTest {
 
         @Autowired
@@ -46,10 +56,15 @@ class UserControllerTest {
         private JwtUtil jwtUtil;
 
         @BeforeEach
-        void setUp() {
+        void setUp(RestDocumentationContextProvider restDocumentation) {
                 userRepository.deleteAll();
                 mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                                 .apply(springSecurity())
+                                .apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
+                                                .operationPreprocessors()
+                                                .withRequestDefaults(Preprocessors.prettyPrint())
+                                                .withResponseDefaults(Preprocessors.prettyPrint())
+                                                .and())
                                 .build();
         }
 
@@ -71,7 +86,19 @@ class UserControllerTest {
                                 .andExpect(jsonPath("$.msg").value("성공"))
                                 .andExpect(jsonPath("$.body.id").exists())
                                 .andExpect(jsonPath("$.body.username").value("testuser"))
-                                .andExpect(jsonPath("$.body.role").value("USER"));
+                                .andExpect(jsonPath("$.body.role").value("USER"))
+                                .andDo(MockMvcRestDocumentation.document("user-signup",
+                                                requestFields(
+                                                                fieldWithPath("username").description("사용자명"),
+                                                                fieldWithPath("password").description("비밀번호"),
+                                                                fieldWithPath("role").description(
+                                                                                "권한 (USER, MANAGER, ADMIN)")),
+                                                responseFields(
+                                                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                                                fieldWithPath("msg").description("응답 메시지"),
+                                                                fieldWithPath("body.id").description("생성된 사용자 ID"),
+                                                                fieldWithPath("body.username").description("사용자명"),
+                                                                fieldWithPath("body.role").description("권한"))));
         }
 
         @Test
@@ -105,7 +132,7 @@ class UserControllerTest {
 
                 // when
                 ResultActions result = mvc.perform(
-                                get("/api/users/" + userId)
+                                get("/api/users/{id}", userId)
                                                 .header("Authorization", "Bearer " + token));
 
                 // then
@@ -114,7 +141,19 @@ class UserControllerTest {
                                 .andExpect(jsonPath("$.msg").value("성공"))
                                 .andExpect(jsonPath("$.body.id").value(userId.intValue()))
                                 .andExpect(jsonPath("$.body.username").value("testuser"))
-                                .andExpect(jsonPath("$.body.role").value("USER"));
+                                .andExpect(jsonPath("$.body.role").value("USER"))
+                                .andDo(MockMvcRestDocumentation.document("user-findById",
+                                                pathParameters(
+                                                                parameterWithName("id").description("사용자 ID")),
+                                                requestHeaders(
+                                                                headerWithName("Authorization").description(
+                                                                                "JWT 토큰 (Bearer {token})")),
+                                                responseFields(
+                                                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                                                fieldWithPath("msg").description("응답 메시지"),
+                                                                fieldWithPath("body.id").description("사용자 ID"),
+                                                                fieldWithPath("body.username").description("사용자명"),
+                                                                fieldWithPath("body.role").description("권한"))));
         }
 
         @Test
@@ -139,7 +178,19 @@ class UserControllerTest {
                                 .andExpect(jsonPath("$.body.token").exists())
                                 .andExpect(jsonPath("$.body.id").value(user.getId().intValue()))
                                 .andExpect(jsonPath("$.body.username").value("testuser"))
-                                .andExpect(jsonPath("$.body.role").value("USER"));
+                                .andExpect(jsonPath("$.body.role").value("USER"))
+                                .andDo(MockMvcRestDocumentation.document("user-login",
+                                                requestFields(
+                                                                fieldWithPath("username").description("사용자명"),
+                                                                fieldWithPath("password").description("비밀번호")),
+                                                responseFields(
+                                                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                                                fieldWithPath("msg").description("응답 메시지"),
+                                                                fieldWithPath("body.token").description(
+                                                                                "JWT Access Token (5일 유효기간)"),
+                                                                fieldWithPath("body.id").description("사용자 ID"),
+                                                                fieldWithPath("body.username").description("사용자명"),
+                                                                fieldWithPath("body.role").description("권한"))));
         }
 
         @Test
