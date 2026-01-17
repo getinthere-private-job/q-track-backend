@@ -698,7 +698,11 @@ class QualityRecordControllerTest {
                                                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                                                 fieldWithPath("msg").description("응답 메시지"),
                                                                 fieldWithPath("body[]").description("공정별 NG 비율 통계 목록"),
+                                                                fieldWithPath("body[].processId").description("공정 ID"),
                                                                 fieldWithPath("body[].processCode").description("공정 코드"),
+                                                                fieldWithPath("body[].processName").description("공정명"),
+                                                                fieldWithPath("body[].totalNgQuantity").description("총 NG 수량"),
+                                                                fieldWithPath("body[].totalQuantity").description("총 수량"),
                                                                 fieldWithPath("body[].ngRate").description("NG 비율 (%)")
                                                 )
                                 ));
@@ -816,7 +820,11 @@ class QualityRecordControllerTest {
                                                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                                                 fieldWithPath("msg").description("응답 메시지"),
                                                                 fieldWithPath("body[]").description("부품별 NG 비율 통계 목록"),
+                                                                fieldWithPath("body[].itemId").description("부품 ID"),
                                                                 fieldWithPath("body[].itemCode").description("부품 코드"),
+                                                                fieldWithPath("body[].itemName").description("부품명"),
+                                                                fieldWithPath("body[].totalNgQuantity").description("총 NG 수량"),
+                                                                fieldWithPath("body[].totalQuantity").description("총 수량"),
                                                                 fieldWithPath("body[].ngRate").description("NG 비율 (%)")
                                                 )
                                 ));
