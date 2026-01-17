@@ -374,4 +374,124 @@ class QualityRecordControllerTest {
                 .andExpect(jsonPath("$.body").isArray())
                 .andExpect(jsonPath("$.body.length()").value(0));
     }
+
+    @Test
+    void ngRate_auto_calculation_test() throws Exception {
+        // given - ngRate 자동 계산 검증
+        QualityRecordRequest.Create request = new QualityRecordRequest.Create(
+                testDailyProduction.getId(),
+                testProcess.getId(),
+                950,
+                50  // NG 비율 = 50/1000 * 100 = 5.0%
+        );
+        String requestBody = om.writeValueAsString(request);
+
+        // when
+        ResultActions result = mvc.perform(
+                post("/api/quality-records")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", "Bearer " + userToken));
+
+        // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.body.ngRate").value(5.0));  // 자동 계산된 NG 비율 검증
+    }
+
+    @Test
+    void evaluation_required_increase_rate_test() throws Exception {
+        // given - 전일 대비 NG 비율 급증 테스트
+        // 전일: NG 비율 1% (10/1000)
+        LocalDate yesterday = LocalDate.of(2025, 1, 14);
+        DailyProduction dpYesterday = new DailyProduction(testItem, yesterday, 1000);
+        dailyProductionRepository.save(dpYesterday);
+        QualityRecordRequest.Create requestYesterday = new QualityRecordRequest.Create(
+                dpYesterday.getId(),
+                testProcess.getId(),
+                990,
+                10  // NG 비율 1%
+        );
+        String requestBodyYesterday = om.writeValueAsString(requestYesterday);
+        mvc.perform(
+                post("/api/quality-records")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBodyYesterday)
+                        .header("Authorization", "Bearer " + userToken));
+
+        // 오늘: NG 비율 5% (50/1000) - 전일 대비 5배 증가 (2배 이상이므로 평가 필요)
+        QualityRecordRequest.Create requestToday = new QualityRecordRequest.Create(
+                testDailyProduction.getId(),
+                testProcess.getId(),
+                950,
+                50  // NG 비율 5%
+        );
+        String requestBodyToday = om.writeValueAsString(requestToday);
+
+        // when
+        ResultActions result = mvc.perform(
+                post("/api/quality-records")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBodyToday)
+                        .header("Authorization", "Bearer " + userToken));
+
+        // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.body.evaluationRequired").value(true))
+                .andExpect(jsonPath("$.body.evaluationReason", containsString("전일 대비 급증")));
+    }
+
+    @Test
+    void evaluate_test() throws Exception {
+        // given
+        QualityRecord qr = new QualityRecord(testDailyProduction, testProcess, 900, 100);
+        qualityRecordRepository.save(qr);
+        Long qrId = qr.getId();
+
+        User evaluator = userRepository.findByUsername("testuser").orElseThrow();
+        Long evaluatorId = evaluator.getId();
+
+        QualityRecordRequest.Evaluate request = new QualityRecordRequest.Evaluate("재료 품질 이슈로 판단됨");
+        String requestBody = om.writeValueAsString(request);
+
+        // when
+        ResultActions result = mvc.perform(
+                put("/api/quality-records/" + qrId + "/evaluate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", "Bearer " + userToken));
+
+        // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.body.expertEvaluation").value("재료 품질 이슈로 판단됨"))
+                .andExpect(jsonPath("$.body.evaluatedBy").value(evaluatorId.intValue()))  // User 외래키 검증
+                .andExpect(jsonPath("$.body.evaluatedAt").exists());
+    }
+
+    @Test
+    void evaluate_evaluatedBy_user_foreign_key_test() throws Exception {
+        // given - evaluatedBy가 User 외래키로 저장되는지 검증
+        QualityRecord qr = new QualityRecord(testDailyProduction, testProcess, 900, 100);
+        qualityRecordRepository.save(qr);
+        Long qrId = qr.getId();
+
+        User evaluator = userRepository.findByUsername("testuser").orElseThrow();
+        Long evaluatorId = evaluator.getId();
+
+        QualityRecordRequest.Evaluate request = new QualityRecordRequest.Evaluate("평가 내용");
+        String requestBody = om.writeValueAsString(request);
+
+        // when
+        mvc.perform(
+                put("/api/quality-records/" + qrId + "/evaluate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", "Bearer " + userToken));
+
+        // then - DB에서 직접 조회하여 evaluatedBy가 User 엔티티로 저장되었는지 확인
+        QualityRecord savedQr = qualityRecordRepository.findByIdWithJoins(qrId).orElseThrow();
+        assert savedQr.getEvaluatedBy() != null;
+        assert savedQr.getEvaluatedBy().getId().equals(evaluatorId);
+        assert savedQr.getEvaluatedBy().getUsername().equals("testuser");
+    }
 }
