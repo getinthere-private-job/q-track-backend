@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'dev.dote'
-version = '0.0.1-SNAPSHOT'
+version = '1.0'
 description = 'Demo project for Spring Boot'
 
 java {
@@ -44,4 +44,9 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// boot jar만 생성
+jar {
+	enabled = true
 }
