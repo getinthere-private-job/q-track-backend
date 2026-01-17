@@ -292,24 +292,6 @@
 #### 9.2 필터 (선택사항)
 - [ ] `_core/filter/LoggingFilter.java` (요청/응답 로깅 - 개발 환경에서 유용할 수 있음)
 
-#### 9.3 전역 예외 처리 통합 테스트 (선택사항)
-- [ ] `_core/errors/GlobalExceptionHandlerTest.java` 생성
-  - Exception400 처리 테스트
-  - Exception401 처리 테스트
-  - Exception403 처리 테스트
-  - Exception500 처리 테스트
-  - 참고: 각 통합 테스트에서 이미 간접적으로 검증됨
-- [ ] `_core/errors/CustomValidationHandlerTest.java` 생성
-  - 유효성 검사 실패 응답 테스트
-  - 참고: 각 통합 테스트에서 이미 간접적으로 검증됨
-
----
-
-**참고: 삭제된 항목**
-- ~~9.1 유틸리티 클래스 (DateUtil, StringUtil)~~ - Java 표준 API로 충분하여 불필요
-- ~~9.3 커스텀 Validator~~ - Jakarta Validation으로 충분하여 불필요
-
----
 
 ### 10. API 문서작성
 static/api.html 파일 만들어서 확인할 수 있게 해줘!!
