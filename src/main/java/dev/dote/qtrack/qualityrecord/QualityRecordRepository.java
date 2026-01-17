@@ -38,4 +38,11 @@ public interface QualityRecordRepository extends JpaRepository<QualityRecord, Lo
             "LEFT JOIN FETCH qr.evaluatedBy " +
             "WHERE qr.id = :id")
     Optional<QualityRecord> findByIdWithJoins(@Param("id") Long id);
+
+    @Query("SELECT qr FROM QualityRecord qr " +
+            "JOIN FETCH qr.dailyProduction dp " +
+            "JOIN FETCH qr.process " +
+            "WHERE (:startDate IS NULL OR dp.productionDate >= :startDate) " +
+            "AND (:endDate IS NULL OR dp.productionDate <= :endDate)")
+    List<QualityRecord> findByDateRange(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }

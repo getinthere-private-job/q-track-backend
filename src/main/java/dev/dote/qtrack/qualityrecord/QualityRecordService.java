@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,7 @@ import java.util.Optional;
  * - 평가 필요 여부 자동 판단 (NG 비율 임계값 초과, 전일 대비 급증)
  * - 평가 필요 목록 조회
  * - 품질 기록 평가 기능
+ * - 공정별/부품별 NG 비율 통계
  */
 @Service
 @Transactional(readOnly = true)
@@ -239,5 +241,79 @@ public class QualityRecordService {
         }
 
         return Optional.empty();
+    }
+
+    public List<QualityRecordResponse.StatisticsByProcess> getNgRateByProcess(LocalDate startDate, LocalDate endDate) {
+        List<QualityRecord> records;
+        if (startDate != null || endDate != null) {
+            records = qualityRecordRepository.findByDateRange(startDate, endDate);
+        } else {
+            records = qualityRecordRepository.findAllWithJoins();
+        }
+
+        // 공정별로 그룹화하여 통계 계산
+        return records.stream()
+                .collect(java.util.stream.Collectors.groupingBy(
+                        QualityRecord::getProcess,
+                        java.util.stream.Collectors.collectingAndThen(
+                                java.util.stream.Collectors.toList(),
+                                list -> {
+                                    int totalNg = list.stream().mapToInt(QualityRecord::getNgQuantity).sum();
+                                    int totalQty = list.stream().mapToInt(QualityRecord::getTotalQuantity).sum();
+                                    BigDecimal ngRate = totalQty > 0
+                                            ? BigDecimal.valueOf(totalNg)
+                                                    .divide(BigDecimal.valueOf(totalQty), 4, RoundingMode.HALF_UP)
+                                                    .multiply(BigDecimal.valueOf(100))
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                            : BigDecimal.ZERO;
+                                    return new QualityRecordResponse.StatisticsByProcess(
+                                            list.get(0).getProcess().getId(),
+                                            list.get(0).getProcess().getCode(),
+                                            list.get(0).getProcess().getName(),
+                                            totalNg,
+                                            totalQty,
+                                            ngRate);
+                                })))
+                .values()
+                .stream()
+                .sorted((a, b) -> a.processCode().compareTo(b.processCode()))
+                .toList();
+    }
+
+    public List<QualityRecordResponse.StatisticsByItem> getNgRateByItem(LocalDate startDate, LocalDate endDate) {
+        List<QualityRecord> records;
+        if (startDate != null || endDate != null) {
+            records = qualityRecordRepository.findByDateRange(startDate, endDate);
+        } else {
+            records = qualityRecordRepository.findAllWithJoins();
+        }
+
+        // 부품별로 그룹화하여 통계 계산
+        return records.stream()
+                .collect(java.util.stream.Collectors.groupingBy(
+                        qr -> qr.getDailyProduction().getItem(),
+                        java.util.stream.Collectors.collectingAndThen(
+                                java.util.stream.Collectors.toList(),
+                                list -> {
+                                    int totalNg = list.stream().mapToInt(QualityRecord::getNgQuantity).sum();
+                                    int totalQty = list.stream().mapToInt(QualityRecord::getTotalQuantity).sum();
+                                    BigDecimal ngRate = totalQty > 0
+                                            ? BigDecimal.valueOf(totalNg)
+                                                    .divide(BigDecimal.valueOf(totalQty), 4, RoundingMode.HALF_UP)
+                                                    .multiply(BigDecimal.valueOf(100))
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                            : BigDecimal.ZERO;
+                                    return new QualityRecordResponse.StatisticsByItem(
+                                            list.get(0).getDailyProduction().getItem().getId(),
+                                            list.get(0).getDailyProduction().getItem().getCode(),
+                                            list.get(0).getDailyProduction().getItem().getName(),
+                                            totalNg,
+                                            totalQty,
+                                            ngRate);
+                                })))
+                .values()
+                .stream()
+                .sorted((a, b) -> a.itemCode().compareTo(b.itemCode()))
+                .toList();
     }
 }

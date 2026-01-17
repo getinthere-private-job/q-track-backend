@@ -252,18 +252,18 @@
 ### Phase 8: 통계 및 집계 기능
 
 #### 8.1 공정별 NG 비율 통계
-- [ ] `qualityrecord/QualityRecordService.java`에 통계 메서드 추가
+- [x] `qualityrecord/QualityRecordService.java`에 통계 메서드 추가
   - `getNgRateByProcess()` - 공정별 NG 비율 집계
   - 기간별 필터링 지원 (시작일, 종료일)
-- [ ] `qualityrecord/QualityRecordController.java`에 API 추가
+- [x] `qualityrecord/QualityRecordController.java`에 API 추가
   - GET `/api/quality-records/statistics/by-process`
   - Query Parameter: `startDate`, `endDate` (선택)
 
 #### 8.2 부품별 NG 비율 통계
-- [ ] `qualityrecord/QualityRecordService.java`에 통계 메서드 추가
+- [x] `qualityrecord/QualityRecordService.java`에 통계 메서드 추가
   - `getNgRateByItem()` - 부품별 NG 비율 집계
   - 기간별 필터링 지원
-- [ ] `qualityrecord/QualityRecordController.java`에 API 추가
+- [x] `qualityrecord/QualityRecordController.java`에 API 추가
   - GET `/api/quality-records/statistics/by-item`
   - Query Parameter: `startDate`, `endDate` (선택)
 
@@ -274,12 +274,12 @@
   - GET `/api/quality-records/evaluation-required`
 
 ##### 8.4 통계 기능 통합 테스트
-- [ ] `qualityrecord/QualityRecordControllerTest.java`에 통계 테스트 추가
-  - 공정별 NG 비율 통계 API 테스트 (GET /api/quality-records/statistics/by-process)
-  - 부품별 NG 비율 통계 API 테스트 (GET /api/quality-records/statistics/by-item)
-  - 기간별 필터링 테스트 (startDate, endDate)
+- [x] `qualityrecord/QualityRecordControllerTest.java`에 통계 테스트 추가
+  - [x] 공정별 NG 비율 통계 API 테스트 (GET /api/quality-records/statistics/by-process)
+  - [x] 부품별 NG 비율 통계 API 테스트 (GET /api/quality-records/statistics/by-item)
+  - [x] 기간별 필터링 테스트 (startDate, endDate)
   - [x] 평가 필요 목록 조회 API 테스트 (GET /api/quality-records/evaluation-required)
-  - 통계 계산 정확성 검증 (수동 계산값과 비교)
+  - [x] 통계 계산 정확성 검증 (수동 계산값과 비교)
 
 ---
 

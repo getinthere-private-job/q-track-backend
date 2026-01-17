@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -15,6 +16,7 @@ import java.util.List;
  * - 품질 기록의 CRUD 기능 제공
  * - 평가 필요 목록 조회 기능 제공
  * - 품질 기록 평가 기능 제공
+ * - 공정별/부품별 NG 비율 통계 기능 제공
  */
 @RestController
 @RequestMapping("/api/quality-records")
@@ -81,6 +83,24 @@ public class QualityRecordController {
     @GetMapping("/evaluation-required")
     public ResponseEntity<Resp<List<QualityRecordResponse.List>>> getEvaluationRequiredList() {
         List<QualityRecordResponse.List> response = qualityRecordService.getEvaluationRequiredList();
+        return Resp.ok(response);
+    }
+
+    @GetMapping("/statistics/by-process")
+    public ResponseEntity<Resp<List<QualityRecordResponse.StatisticsByProcess>>> getNgRateByProcess(
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate) {
+        List<QualityRecordResponse.StatisticsByProcess> response = qualityRecordService.getNgRateByProcess(startDate,
+                endDate);
+        return Resp.ok(response);
+    }
+
+    @GetMapping("/statistics/by-item")
+    public ResponseEntity<Resp<List<QualityRecordResponse.StatisticsByItem>>> getNgRateByItem(
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate) {
+        List<QualityRecordResponse.StatisticsByItem> response = qualityRecordService.getNgRateByItem(startDate,
+                endDate);
         return Resp.ok(response);
     }
 }

@@ -67,4 +67,22 @@ public class QualityRecordResponse {
             Long evaluatedBy,
             LocalDateTime evaluatedAt) {
     }
+
+    public record StatisticsByProcess(
+            Long processId,
+            String processCode,
+            String processName,
+            Integer totalNgQuantity,
+            Integer totalQuantity,
+            BigDecimal ngRate) {
+    }
+
+    public record StatisticsByItem(
+            Long itemId,
+            String itemCode,
+            String itemName,
+            Integer totalNgQuantity,
+            Integer totalQuantity,
+            BigDecimal ngRate) {
+    }
 }
