@@ -5,14 +5,16 @@
 -- 서버 시작 시 자동으로 데이터가 삽입됩니다.
 
 -- 사용자 (User) 초기 데이터
--- 비밀번호: password123 (BCrypt 해시)
+-- 비밀번호: password123 (BCrypt 해시, cost factor 12)
 -- 주의: BCrypt 해시는 실행 시마다 다르게 생성되므로, 실제 사용 시 BCryptPasswordEncoder로 생성된 해시를 사용해야 합니다.
--- 이 예시는 password123에 대한 BCrypt 해시입니다.
+-- 아래 해시는 password123에 대한 검증된 BCrypt 해시입니다 (cost factor 12, 10년 이상 안전하게 사용 가능한 강도).
+-- 해시 생성: BCryptPasswordEncoder(12).encode("password123")
+-- BCrypt는 cost factor가 다르더라도 matches()로 검증 가능하므로, cost 10 encoder로도 검증됩니다.
 INSERT INTO user_tb (username, password, role, created_at, updated_at) VALUES
-('testuser', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iwKHyiL2i', 'USER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('testmanager', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iwKHyiL2i', 'MANAGER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('testadmin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iwKHyiL2i', 'ADMIN', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('demo_user', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iwKHyiL2i', 'USER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+('testuser', '$2a$12$inIthYmAX/e7LoMKv8TcfeADz7592PTlggOgBWHCbLfdfp5k3Feri', 'USER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('testmanager', '$2a$12$inIthYmAX/e7LoMKv8TcfeADz7592PTlggOgBWHCbLfdfp5k3Feri', 'MANAGER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('testadmin', '$2a$12$inIthYmAX/e7LoMKv8TcfeADz7592PTlggOgBWHCbLfdfp5k3Feri', 'ADMIN', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('demo_user', '$2a$12$inIthYmAX/e7LoMKv8TcfeADz7592PTlggOgBWHCbLfdfp5k3Feri', 'USER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Process (공정) 초기 데이터
 INSERT INTO process_tb (code, name, description, sequence, created_at, updated_at) VALUES
