@@ -1,20 +1,25 @@
 # Build stage
-FROM gradle:8.5-jdk21 AS build
+FROM eclipse-temurin:21-jdk-alpine AS build
 
 WORKDIR /app
 
-# Gradle 캐시를 활용하기 위해 build.gradle과 settings.gradle을 먼저 복사
+# Gradle wrapper와 설정 파일 복사
 COPY build.gradle settings.gradle ./
 COPY gradle ./gradle
+COPY gradlew ./
+COPY gradlew.bat ./
+
+# Gradle wrapper 실행 권한 부여
+RUN chmod +x gradlew
 
 # 의존성 다운로드 (캐시 활용)
-RUN gradle dependencies --no-daemon || true
+RUN ./gradlew dependencies --no-daemon || true
 
 # 소스 코드 복사
 COPY src ./src
 
-# 빌드 실행
-RUN gradle clean bootJar --no-daemon
+# 빌드 실행 (gradle wrapper 사용 - wrapper가 자동으로 Gradle 9.2.1 다운로드)
+RUN ./gradlew clean bootJar --no-daemon
 
 # Runtime stage
 FROM eclipse-temurin:21-jre-alpine

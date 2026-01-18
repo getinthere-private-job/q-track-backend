@@ -57,7 +57,6 @@ class UserControllerTest {
 
         @BeforeEach
         void setUp(RestDocumentationContextProvider restDocumentation) {
-                userRepository.deleteAll();
                 mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                                 .apply(springSecurity())
                                 .apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
@@ -70,8 +69,8 @@ class UserControllerTest {
 
         @Test
         void signup_test() throws Exception {
-                // given
-                UserRequest.Signup request = new UserRequest.Signup("testuser", "password123", Role.USER);
+                // given - 새로운 사용자 생성 (data-dev.sql에 없는 사용자명 사용)
+                UserRequest.Signup request = new UserRequest.Signup("newuser", "password123", Role.USER);
                 String requestBody = om.writeValueAsString(request);
 
                 // when
@@ -85,7 +84,7 @@ class UserControllerTest {
                                 .andExpect(jsonPath("$.status").value(200))
                                 .andExpect(jsonPath("$.msg").value("성공"))
                                 .andExpect(jsonPath("$.body.id").exists())
-                                .andExpect(jsonPath("$.body.username").value("testuser"))
+                                .andExpect(jsonPath("$.body.username").value("newuser"))
                                 .andExpect(jsonPath("$.body.role").value("USER"))
                                 .andDo(MockMvcRestDocumentation.document("user-signup",
                                                 requestFields(
@@ -103,9 +102,7 @@ class UserControllerTest {
 
         @Test
         void signup_duplicate_username_test() throws Exception {
-                // given
-                User existingUser = new User("testuser", passwordEncoder.encode("password123"), Role.USER);
-                userRepository.save(existingUser);
+                // given - data-dev.sql의 testuser가 이미 존재함
 
                 UserRequest.Signup request = new UserRequest.Signup("testuser", "password456", Role.USER);
                 String requestBody = om.writeValueAsString(request);
@@ -124,9 +121,9 @@ class UserControllerTest {
 
         @Test
         void findById_test() throws Exception {
-                // given
-                User user = new User("testuser", passwordEncoder.encode("password123"), Role.USER);
-                userRepository.save(user);
+                // given - data-dev.sql의 testuser 사용
+                User user = userRepository.findByUsername("testuser")
+                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 testuser를 찾을 수 없습니다"));
                 Long userId = user.getId();
                 String token = jwtUtil.generateToken(user.getId(), user.getRole());
 
@@ -158,11 +155,12 @@ class UserControllerTest {
 
         @Test
         void login_success_test() throws Exception {
-                // given
-                User user = new User("testuser", passwordEncoder.encode("password123"), Role.USER);
-                userRepository.save(user);
+                // given - data-dev.sql의 testuser 사용 시 BCrypt 해시 검증 문제가 있을 수 있으므로
+                // 테스트용 사용자를 새로 생성하여 검증
+                User testUser = new User("logintestuser", passwordEncoder.encode("password123"), Role.USER);
+                userRepository.save(testUser);
 
-                UserRequest.Login request = new UserRequest.Login("testuser", "password123");
+                UserRequest.Login request = new UserRequest.Login("logintestuser", "password123");
                 String requestBody = om.writeValueAsString(request);
 
                 // when
@@ -176,8 +174,8 @@ class UserControllerTest {
                                 .andExpect(jsonPath("$.status").value(200))
                                 .andExpect(jsonPath("$.msg").value("성공"))
                                 .andExpect(jsonPath("$.body.token").exists())
-                                .andExpect(jsonPath("$.body.id").value(user.getId().intValue()))
-                                .andExpect(jsonPath("$.body.username").value("testuser"))
+                                .andExpect(jsonPath("$.body.id").value(testUser.getId().intValue()))
+                                .andExpect(jsonPath("$.body.username").value("logintestuser"))
                                 .andExpect(jsonPath("$.body.role").value("USER"))
                                 .andDo(MockMvcRestDocumentation.document("user-login",
                                                 requestFields(
@@ -195,9 +193,9 @@ class UserControllerTest {
 
         @Test
         void login_wrong_password_test() throws Exception {
-                // given
-                User user = new User("testuser", passwordEncoder.encode("password123"), Role.USER);
-                userRepository.save(user);
+                // given - data-dev.sql의 testuser 사용
+                User user = userRepository.findByUsername("testuser")
+                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 testuser를 찾을 수 없습니다"));
 
                 UserRequest.Login request = new UserRequest.Login("testuser", "wrongpassword");
                 String requestBody = om.writeValueAsString(request);

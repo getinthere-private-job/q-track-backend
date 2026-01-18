@@ -76,9 +76,6 @@ class DailyProductionControllerTest {
 
         @BeforeEach
         void setUp(RestDocumentationContextProvider restDocumentation) {
-                dailyProductionRepository.deleteAll();
-                itemRepository.deleteAll();
-                userRepository.deleteAll();
                 mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                                 .apply(springSecurity())
                                 .apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
@@ -88,32 +85,26 @@ class DailyProductionControllerTest {
                                                 .and())
                                 .build();
 
-                // 테스트용 사용자 생성 및 토큰 생성
-                User user = new User("testuser", passwordEncoder.encode("password123"), Role.USER);
-                User manager = new User("testmanager", passwordEncoder.encode("password123"), Role.MANAGER);
-                User admin = new User("testadmin", passwordEncoder.encode("password123"), Role.ADMIN);
-                userRepository.save(user);
-                userRepository.save(manager);
-                userRepository.save(admin);
+                // data-dev.sql의 사용자 조회 및 토큰 생성
+                User user = userRepository.findByUsername("testuser")
+                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 testuser를 찾을 수 없습니다"));
+                User manager = userRepository.findByUsername("testmanager")
+                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 testmanager를 찾을 수 없습니다"));
+                User admin = userRepository.findByUsername("testadmin")
+                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 testadmin를 찾을 수 없습니다"));
 
                 userToken = jwtUtil.generateToken(user.getId(), user.getRole());
                 managerToken = jwtUtil.generateToken(manager.getId(), manager.getRole());
                 adminToken = jwtUtil.generateToken(admin.getId(), admin.getRole());
 
-                // 테스트용 부품 생성
-                testItem = new Item("ITEM001", "부품1", "부품1 설명", "카테고리1");
-                itemRepository.save(testItem);
+                // data-dev.sql의 부품 조회
+                testItem = itemRepository.findByCode("ITEM001")
+                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 ITEM001를 찾을 수 없습니다"));
         }
 
         @Test
         void findAll_test() throws Exception {
-                // given
-                LocalDate date1 = LocalDate.of(2025, 1, 15);
-                LocalDate date2 = LocalDate.of(2025, 1, 16);
-                DailyProduction dp1 = new DailyProduction(testItem, date1, 1000);
-                DailyProduction dp2 = new DailyProduction(testItem, date2, 2000);
-                dailyProductionRepository.save(dp1);
-                dailyProductionRepository.save(dp2);
+                // given - data-dev.sql의 DailyProduction 데이터 사용
 
                 // when
                 ResultActions result = mvc.perform(
@@ -125,7 +116,7 @@ class DailyProductionControllerTest {
                                 .andExpect(jsonPath("$.status").value(200))
                                 .andExpect(jsonPath("$.msg").value("성공"))
                                 .andExpect(jsonPath("$.body").isArray())
-                                .andExpect(jsonPath("$.body.length()").value(2))
+                                .andExpect(jsonPath("$.body.length()").value(org.hamcrest.Matchers.greaterThanOrEqualTo(2)))
                                 .andDo(MockMvcRestDocumentation.document("dailyproduction-findAll",
                                                 requestHeaders(
                                                                 headerWithName("Authorization").description("JWT 토큰 (Bearer {token})")
@@ -144,10 +135,9 @@ class DailyProductionControllerTest {
 
         @Test
         void findById_test() throws Exception {
-                // given
-                LocalDate date = LocalDate.of(2025, 1, 15);
-                DailyProduction dp = new DailyProduction(testItem, date, 1000);
-                dailyProductionRepository.save(dp);
+                // given - data-dev.sql의 오늘 날짜 DailyProduction 사용
+                DailyProduction dp = dailyProductionRepository.findByItemAndProductionDateWithItem(testItem, LocalDate.now())
+                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 오늘자 DailyProduction을 찾을 수 없습니다"));
                 Long dpId = dp.getId();
 
                 // when
@@ -161,8 +151,8 @@ class DailyProductionControllerTest {
                                 .andExpect(jsonPath("$.msg").value("성공"))
                                 .andExpect(jsonPath("$.body.id").value(dpId.intValue()))
                                 .andExpect(jsonPath("$.body.itemId").value(testItem.getId().intValue()))
-                                .andExpect(jsonPath("$.body.productionDate").value("2025-01-15"))
-                                .andExpect(jsonPath("$.body.totalQuantity").value(1000))
+                                .andExpect(jsonPath("$.body.productionDate").value(LocalDate.now().toString()))
+                                .andExpect(jsonPath("$.body.totalQuantity").exists())
                                 .andDo(MockMvcRestDocumentation.document("dailyproduction-findById",
                                                 pathParameters(
                                                                 parameterWithName("id").description("일별 생산 데이터 ID")

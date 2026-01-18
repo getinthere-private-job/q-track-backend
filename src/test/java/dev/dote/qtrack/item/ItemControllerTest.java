@@ -67,8 +67,6 @@ class ItemControllerTest {
 
         @BeforeEach
         void setUp(RestDocumentationContextProvider restDocumentation) {
-                itemRepository.deleteAll();
-                userRepository.deleteAll();
                 mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                                 .apply(springSecurity())
                                 .apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
@@ -78,13 +76,13 @@ class ItemControllerTest {
                                                 .and())
                                 .build();
 
-                // 테스트용 사용자 생성 및 토큰 생성
-                User user = new User("testuser", passwordEncoder.encode("password123"), Role.USER);
-                User manager = new User("testmanager", passwordEncoder.encode("password123"), Role.MANAGER);
-                User admin = new User("testadmin", passwordEncoder.encode("password123"), Role.ADMIN);
-                userRepository.save(user);
-                userRepository.save(manager);
-                userRepository.save(admin);
+                // data-dev.sql의 사용자 조회 및 토큰 생성
+                User user = userRepository.findByUsername("testuser")
+                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 testuser를 찾을 수 없습니다"));
+                User manager = userRepository.findByUsername("testmanager")
+                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 testmanager를 찾을 수 없습니다"));
+                User admin = userRepository.findByUsername("testadmin")
+                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 testadmin를 찾을 수 없습니다"));
 
                 userToken = jwtUtil.generateToken(user.getId(), user.getRole());
                 managerToken = jwtUtil.generateToken(manager.getId(), manager.getRole());
@@ -93,11 +91,7 @@ class ItemControllerTest {
 
         @Test
         void findAll_test() throws Exception {
-                // given
-                Item item1 = new Item("ITEM001", "부품1", "부품1 설명", "카테고리1");
-                Item item2 = new Item("ITEM002", "부품2", "부품2 설명", "카테고리2");
-                itemRepository.save(item1);
-                itemRepository.save(item2);
+                // given - data-dev.sql의 데이터 사용 (ITEM001, ITEM002, ITEM003, ITEM004, ITEM005)
 
                 // when
                 ResultActions result = mvc.perform(
@@ -109,7 +103,7 @@ class ItemControllerTest {
                                 .andExpect(jsonPath("$.status").value(200))
                                 .andExpect(jsonPath("$.msg").value("성공"))
                                 .andExpect(jsonPath("$.body").isArray())
-                                .andExpect(jsonPath("$.body.length()").value(2))
+                                .andExpect(jsonPath("$.body.length()").value(org.hamcrest.Matchers.greaterThanOrEqualTo(2)))
                                 .andDo(MockMvcRestDocumentation.document("item-findAll",
                                                 requestHeaders(
                                                                 headerWithName("Authorization").description(
@@ -127,9 +121,9 @@ class ItemControllerTest {
 
         @Test
         void findById_test() throws Exception {
-                // given
-                Item item = new Item("ITEM001", "부품1", "부품1 설명", "카테고리1");
-                itemRepository.save(item);
+                // given - data-dev.sql의 ITEM001 사용
+                Item item = itemRepository.findByCode("ITEM001")
+                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 ITEM001를 찾을 수 없습니다"));
                 Long itemId = item.getId();
 
                 // when
@@ -143,9 +137,9 @@ class ItemControllerTest {
                                 .andExpect(jsonPath("$.msg").value("성공"))
                                 .andExpect(jsonPath("$.body.id").value(itemId.intValue()))
                                 .andExpect(jsonPath("$.body.code").value("ITEM001"))
-                                .andExpect(jsonPath("$.body.name").value("부품1"))
-                                .andExpect(jsonPath("$.body.description").value("부품1 설명"))
-                                .andExpect(jsonPath("$.body.category").value("카테고리1"))
+                                .andExpect(jsonPath("$.body.name").value("P2 부품"))
+                                .andExpect(jsonPath("$.body.description").value("엔진 제어 부품"))
+                                .andExpect(jsonPath("$.body.category").value("엔진"))
                                 .andDo(MockMvcRestDocumentation.document("item-findById",
                                                 pathParameters(
                                                                 parameterWithName("id").description("부품 ID")),
@@ -164,8 +158,8 @@ class ItemControllerTest {
 
         @Test
         void create_as_manager_test() throws Exception {
-                // given
-                ItemRequest.Create request = new ItemRequest.Create("ITEM001", "부품1", "부품1 설명", "카테고리1");
+                // given - data-dev.sql에 없는 새로운 코드 사용
+                ItemRequest.Create request = new ItemRequest.Create("ITEM999", "새 부품", "새 부품 설명", "새 카테고리");
                 String requestBody = om.writeValueAsString(request);
 
                 // when
@@ -180,8 +174,8 @@ class ItemControllerTest {
                                 .andExpect(jsonPath("$.status").value(200))
                                 .andExpect(jsonPath("$.msg").value("성공"))
                                 .andExpect(jsonPath("$.body.id").exists())
-                                .andExpect(jsonPath("$.body.code").value("ITEM001"))
-                                .andExpect(jsonPath("$.body.name").value("부품1"))
+                                .andExpect(jsonPath("$.body.code").value("ITEM999"))
+                                .andExpect(jsonPath("$.body.name").value("새 부품"))
                                 .andDo(MockMvcRestDocumentation.document("item-create",
                                                 requestHeaders(
                                                                 headerWithName("Authorization").description(
@@ -203,8 +197,8 @@ class ItemControllerTest {
 
         @Test
         void create_as_admin_test() throws Exception {
-                // given
-                ItemRequest.Create request = new ItemRequest.Create("ITEM001", "부품1", "부품1 설명", "카테고리1");
+                // given - data-dev.sql에 없는 새로운 코드 사용
+                ItemRequest.Create request = new ItemRequest.Create("ITEM998", "새 부품", "새 부품 설명", "새 카테고리");
                 String requestBody = om.writeValueAsString(request);
 
                 // when
@@ -217,7 +211,7 @@ class ItemControllerTest {
                 // then
                 result.andExpect(status().isOk())
                                 .andExpect(jsonPath("$.status").value(200))
-                                .andExpect(jsonPath("$.body.code").value("ITEM001"));
+                                .andExpect(jsonPath("$.body.code").value("ITEM998"));
         }
 
         @Test
@@ -239,9 +233,7 @@ class ItemControllerTest {
 
         @Test
         void create_duplicate_code_test() throws Exception {
-                // given
-                Item existingItem = new Item("ITEM001", "부품1", "부품1 설명", "카테고리1");
-                itemRepository.save(existingItem);
+                // given - data-dev.sql의 ITEM001이 이미 존재함
 
                 ItemRequest.Create request = new ItemRequest.Create("ITEM001", "부품2", "부품2 설명", "카테고리2");
                 String requestBody = om.writeValueAsString(request);
@@ -261,9 +253,9 @@ class ItemControllerTest {
 
         @Test
         void update_as_manager_test() throws Exception {
-                // given
-                Item item = new Item("ITEM001", "부품1", "부품1 설명", "카테고리1");
-                itemRepository.save(item);
+                // given - data-dev.sql의 ITEM001 사용
+                Item item = itemRepository.findByCode("ITEM001")
+                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 ITEM001를 찾을 수 없습니다"));
                 Long itemId = item.getId();
 
                 ItemRequest.Update request = new ItemRequest.Update("부품1 수정", "수정된 설명", "수정된 카테고리");
@@ -304,9 +296,9 @@ class ItemControllerTest {
 
         @Test
         void update_as_user_forbidden_test() throws Exception {
-                // given
-                Item item = new Item("ITEM001", "부품1", "부품1 설명", "카테고리1");
-                itemRepository.save(item);
+                // given - data-dev.sql의 ITEM001 사용
+                Item item = itemRepository.findByCode("ITEM001")
+                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 ITEM001를 찾을 수 없습니다"));
                 Long itemId = item.getId();
 
                 ItemRequest.Update request = new ItemRequest.Update("부품1 수정", "수정된 설명", "수정된 카테고리");
@@ -325,9 +317,9 @@ class ItemControllerTest {
 
         @Test
         void delete_as_admin_test() throws Exception {
-                // given
-                Item item = new Item("ITEM001", "부품1", "부품1 설명", "카테고리1");
-                itemRepository.save(item);
+                // given - data-dev.sql의 ITEM001 사용
+                Item item = itemRepository.findByCode("ITEM001")
+                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 ITEM001를 찾을 수 없습니다"));
                 Long itemId = item.getId();
 
                 // when
@@ -353,9 +345,9 @@ class ItemControllerTest {
 
         @Test
         void delete_as_manager_forbidden_test() throws Exception {
-                // given
-                Item item = new Item("ITEM001", "부품1", "부품1 설명", "카테고리1");
-                itemRepository.save(item);
+                // given - data-dev.sql의 ITEM001 사용
+                Item item = itemRepository.findByCode("ITEM001")
+                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 ITEM001를 찾을 수 없습니다"));
                 Long itemId = item.getId();
 
                 // when
@@ -369,9 +361,9 @@ class ItemControllerTest {
 
         @Test
         void delete_as_user_forbidden_test() throws Exception {
-                // given
-                Item item = new Item("ITEM001", "부품1", "부품1 설명", "카테고리1");
-                itemRepository.save(item);
+                // given - data-dev.sql의 ITEM001 사용
+                Item item = itemRepository.findByCode("ITEM001")
+                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 ITEM001를 찾을 수 없습니다"));
                 Long itemId = item.getId();
 
                 // when

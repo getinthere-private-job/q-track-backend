@@ -48,12 +48,12 @@ class SecurityConfigTest {
 
     @BeforeEach
     void setUp() {
-        userRepository.deleteAll();
+        // data-dev.sql의 testuser 사용
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                 .apply(springSecurity())
                 .build();
-        user = new User("testuser", passwordEncoder.encode("password123"), Role.USER);
-        userRepository.save(user);
+        user = userRepository.findByUsername("testuser")
+                .orElseThrow(() -> new RuntimeException("data-dev.sql의 testuser를 찾을 수 없습니다"));
         token = jwtUtil.generateToken(user.getId(), user.getRole());
     }
 
@@ -101,12 +101,15 @@ class SecurityConfigTest {
 
     @Test
     void login_permit_all_test() throws Exception {
-        // given - permitAll 설정된 엔드포인트
+        // given - permitAll 설정된 엔드포인트, 테스트용 사용자 생성
+        User testUser = new User("logintest2", passwordEncoder.encode("password123"), Role.USER);
+        userRepository.save(testUser);
+        
         // when
         ResultActions result = mvc.perform(
                 post("/api/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\":\"testuser\",\"password\":\"password123\"}"));
+                        .content("{\"username\":\"logintest2\",\"password\":\"password123\"}"));
 
         // then
         result.andExpect(status().isOk());

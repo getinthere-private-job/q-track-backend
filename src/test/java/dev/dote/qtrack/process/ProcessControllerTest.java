@@ -61,7 +61,6 @@ class ProcessControllerTest {
 
     @BeforeEach
     void setUp(RestDocumentationContextProvider restDocumentation) {
-        processRepository.deleteAll();
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                 .apply(springSecurity())
                 .apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
@@ -71,21 +70,15 @@ class ProcessControllerTest {
                         .and())
                 .build();
 
-        // 테스트용 사용자 생성 및 토큰 생성
-        User user = new User("testuser", passwordEncoder.encode("password123"), Role.USER);
-        userRepository.save(user);
+        // data-dev.sql의 사용자 조회 및 토큰 생성
+        User user = userRepository.findByUsername("testuser")
+                .orElseThrow(() -> new RuntimeException("data-dev.sql의 testuser를 찾을 수 없습니다"));
         token = jwtUtil.generateToken(user.getId(), user.getRole());
     }
 
     @Test
     void findAll_test() throws Exception {
-        // given
-        Process process1 = new Process("W", "작업", "작업 공정", 1);
-        Process process2 = new Process("P", "제조", "제조 공정", 2);
-        Process process3 = new Process("검", "검사", "검사 공정", 3);
-        processRepository.save(process1);
-        processRepository.save(process2);
-        processRepository.save(process3);
+        // given - data-dev.sql의 데이터 사용 (W, P, 검)
 
         // when
         ResultActions result = mvc.perform(
@@ -121,9 +114,9 @@ class ProcessControllerTest {
 
     @Test
     void findById_test() throws Exception {
-        // given
-        Process process = new Process("W", "작업", "작업 공정", 1);
-        processRepository.save(process);
+        // given - data-dev.sql의 'W' 공정 사용
+        Process process = processRepository.findByCode("W")
+                .orElseThrow(() -> new RuntimeException("data-dev.sql의 'W' 공정을 찾을 수 없습니다"));
         Long processId = process.getId();
 
         // when
@@ -138,7 +131,7 @@ class ProcessControllerTest {
                 .andExpect(jsonPath("$.body.id").value(processId.intValue()))
                 .andExpect(jsonPath("$.body.code").value("W"))
                 .andExpect(jsonPath("$.body.name").value("작업"))
-                .andExpect(jsonPath("$.body.description").value("작업 공정"))
+                .andExpect(jsonPath("$.body.description").value("초기 가공 작업 공정"))
                 .andExpect(jsonPath("$.body.sequence").value(1))
                 .andDo(MockMvcRestDocumentation.document("process-findById",
                         pathParameters(
