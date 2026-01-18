@@ -75,7 +75,7 @@ class UserControllerTest {
 
                 // when
                 ResultActions result = mvc.perform(
-                                post("/api/users/signup")
+                                post("/signup")
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .content(requestBody));
 
@@ -109,7 +109,7 @@ class UserControllerTest {
 
                 // when
                 ResultActions result = mvc.perform(
-                                post("/api/users/signup")
+                                post("/signup")
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .content(requestBody));
 
@@ -165,7 +165,7 @@ class UserControllerTest {
 
                 // when
                 ResultActions result = mvc.perform(
-                                post("/api/users/login")
+                                post("/login")
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .content(requestBody));
 
@@ -202,7 +202,7 @@ class UserControllerTest {
 
                 // when
                 ResultActions result = mvc.perform(
-                                post("/api/users/login")
+                                post("/login")
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .content(requestBody));
 
@@ -220,7 +220,7 @@ class UserControllerTest {
 
                 // when
                 ResultActions result = mvc.perform(
-                                post("/api/users/login")
+                                post("/login")
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .content(requestBody));
 

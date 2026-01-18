@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
  * - JWT 토큰 기반 인증 처리
  */
 @RestController
-@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
@@ -34,7 +33,7 @@ public class UserController {
         return Resp.ok(response);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/users/{id}")
     public ResponseEntity<Resp<UserResponse.Get>> findById(@PathVariable Long id) {
         UserResponse.Get response = userService.findById(id);
         return Resp.ok(response);

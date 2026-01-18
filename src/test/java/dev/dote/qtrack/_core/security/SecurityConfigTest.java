@@ -91,7 +91,7 @@ class SecurityConfigTest {
         // given - permitAll 설정된 엔드포인트
         // when
         ResultActions result = mvc.perform(
-                post("/api/users/signup")
+                post("/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"newuser\",\"password\":\"password123\",\"role\":\"USER\"}"));
 
@@ -107,7 +107,7 @@ class SecurityConfigTest {
         
         // when
         ResultActions result = mvc.perform(
-                post("/api/users/login")
+                post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"logintest2\",\"password\":\"password123\"}"));
 
