@@ -592,7 +592,29 @@ class QualityRecordControllerTest {
                                 .andExpect(jsonPath("$.status").value(200))
                                 .andExpect(jsonPath("$.body.expertEvaluation").value("재료 품질 이슈로 판단됨"))
                                 .andExpect(jsonPath("$.body.evaluatedBy").value(evaluatorId.intValue())) // User 외래키 검증
-                                .andExpect(jsonPath("$.body.evaluatedAt").exists());
+                                .andExpect(jsonPath("$.body.evaluatedAt").exists())
+                                .andDo(MockMvcRestDocumentation.document("qualityrecord-evaluate",
+                                                pathParameters(
+                                                                parameterWithName("id").description("품질 기록 ID")),
+                                                requestHeaders(
+                                                                headerWithName("Authorization").description(
+                                                                                "JWT 토큰 (Bearer {token})")),
+                                                requestFields(
+                                                                fieldWithPath("expertEvaluation")
+                                                                                .description("전문가 평가 내용")),
+                                                responseFields(
+                                                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                                                fieldWithPath("msg").description("응답 메시지"),
+                                                                fieldWithPath("body.id").description("품질 기록 ID"),
+                                                                fieldWithPath("body.dailyProductionId")
+                                                                                .description("일별 생산 데이터 ID"),
+                                                                fieldWithPath("body.processId").description("공정 ID"),
+                                                                fieldWithPath("body.expertEvaluation")
+                                                                                .description("전문가 평가 내용"),
+                                                                fieldWithPath("body.evaluatedBy")
+                                                                                .description("평가자 ID (User ID)"),
+                                                                fieldWithPath("body.evaluatedAt")
+                                                                                .description("평가 일시 (ISO 8601 형식)"))));
         }
 
         @Test

@@ -534,11 +534,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/users/login HTTP/1.1
 Content-Type: application/json
-Content-Length: 62
+Content-Length: 67
 Host: localhost:8080
 
 {
-  "username" : "testuser",
+  "username" : "logintestuser",
   "password" : "password123"
 }</code></pre>
 </div>
@@ -546,6 +546,9 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -559,9 +562,9 @@ Content-Length: 340
   "status" : 200,
   "msg" : "성공",
   "body" : {
-    "token" : "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMTEiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc2ODY2NTEzMSwiZXhwIjoxNzY5MDk3MTMxfQ.tTFI2DlRkQFYLUyvys3USO_p__fYZTf3xV0E-CfvuHCJ1vD3FFfduPCDWX3zNJZCxkqr2s4YrCzKYEXJVz8Bzw",
-    "id" : 111,
-    "username" : "testuser",
+    "token" : "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3Iiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODcsImV4cCI6MTc2OTE1MjQ4N30.uE3c1dYrGqMb-5XmB73xbcdkqIzYko2kE25y0kBxDXA3ow65tIcf0eevpT-38ucUiKxmc8U9HOWQ3OkEaWbUNA",
+    "id" : 7,
+    "username" : "logintestuser",
     "role" : "USER"
   }
 }</code></pre>
@@ -579,11 +582,11 @@ Content-Length: 340
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/users/signup HTTP/1.1
 Content-Type: application/json
-Content-Length: 82
+Content-Length: 81
 Host: localhost:8080
 
 {
-  "username" : "testuser",
+  "username" : "newuser",
   "password" : "password123",
   "role" : "USER"
 }</code></pre>
@@ -592,6 +595,9 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -599,14 +605,14 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 131
+Content-Length: 128
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : {
-    "id" : 112,
-    "username" : "testuser",
+    "id" : 8,
+    "username" : "newuser",
     "role" : "USER"
   }
 }</code></pre>
@@ -617,14 +623,17 @@ Content-Length: 131
 <h3 id="_사용자_조회">3.2. 사용자 조회</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/users/110 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMTAiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc2ODY2NTEzMSwiZXhwIjoxNzY5MDk3MTMxfQ.ss_9FavoMhnMnqWPT2CiKzs3znF069t6Bfi8P5ToSuaozshHen32hh0IviU-9HPFElhuSFDuzvHj3PYaiBgGsg
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/users/1 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODcsImV4cCI6MTc2OTE1MjQ4N30.fybtZrV27-QPMsv7BQUgaazUFh1qZRXVNK7D_jwyym_b048K_r7Me5Fw2rZxB_RnFYADcm-6o-v_3nQ1AF6-gg
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -632,13 +641,13 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 131
+Content-Length: 129
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : {
-    "id" : 110,
+    "id" : 1,
     "username" : "testuser",
     "role" : "USER"
   }
@@ -656,13 +665,16 @@ Content-Length: 131
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/processes HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2NiIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjY1MTI4LCJleHAiOjE3NjkwOTcxMjh9.94f0J6m40dYN1h1LhFybwEsvCN4odocpS_SJ8NnacXmEt_qf3BvQ64NlpxXpXYPwDkZVKYAKPRBqYTcVaUgs6A
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODYsImV4cCI6MTc2OTE1MjQ4Nn0.89GAy639-sIdStCpW027F-s92PWoOB1xFXVFrnCvZGV_WwXde3l4oRDYmv8VNoHLuVA6CxRXdxMN6O5A1cTqug
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -670,28 +682,28 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 433
+Content-Length: 472
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : [ {
-    "id" : 2,
+    "id" : 1,
     "code" : "W",
     "name" : "작업",
-    "description" : "작업 공정",
+    "description" : "초기 가공 작업 공정",
     "sequence" : 1
   }, {
-    "id" : 3,
+    "id" : 2,
     "code" : "P",
     "name" : "제조",
-    "description" : "제조 공정",
+    "description" : "특정 제조 공정",
     "sequence" : 2
   }, {
-    "id" : 4,
+    "id" : 3,
     "code" : "검",
     "name" : "검사",
-    "description" : "검사 공정",
+    "description" : "품질 검사 및 검증 공정",
     "sequence" : 3
   } ]
 }</code></pre>
@@ -703,13 +715,16 @@ Content-Length: 433
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/processes/1 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2NCIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjY1MTI4LCJleHAiOjE3NjkwOTcxMjh9.J6VwMuvY6KUL57MSWNcMpgVdXBoyrgBS5z-B5knKpwzcb5FTVlzqT53jHkbQvG3uU1E5i03pyfEAQwF7XNhw7Q
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODYsImV4cCI6MTc2OTE1MjQ4Nn0.89GAy639-sIdStCpW027F-s92PWoOB1xFXVFrnCvZGV_WwXde3l4oRDYmv8VNoHLuVA6CxRXdxMN6O5A1cTqug
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -717,7 +732,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 179
+Content-Length: 193
 
 {
   "status" : 200,
@@ -726,7 +741,7 @@ Content-Length: 179
     "id" : 1,
     "code" : "W",
     "name" : "작업",
-    "description" : "작업 공정",
+    "description" : "초기 가공 작업 공정",
     "sequence" : 1
   }
 }</code></pre>
@@ -743,13 +758,16 @@ Content-Length: 179
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/system-codes HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMDgiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc2ODY2NTEzMSwiZXhwIjoxNzY5MDk3MTMxfQ.smtSkN44yW2jn8OeZxyOWs_wPj-9a5kgvM3kwpWWqSaQMRTQs5rpGfApXuhSuqWb8GWBfPXfqF0W8fVNelAbPQ
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODcsImV4cCI6MTc2OTE1MjQ4N30.fybtZrV27-QPMsv7BQUgaazUFh1qZRXVNK7D_jwyym_b048K_r7Me5Fw2rZxB_RnFYADcm-6o-v_3nQ1AF6-gg
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -757,31 +775,31 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 634
+Content-Length: 677
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : [ {
-    "id" : 44,
+    "id" : 1,
     "codeGroup" : "INDUSTRY_AVERAGE",
     "codeKey" : "NG_RATE_THRESHOLD",
-    "codeValue" : "0.5",
-    "description" : "NG 비율 임계값",
-    "isActive" : true
-  }, {
-    "id" : 45,
-    "codeGroup" : "INDUSTRY_AVERAGE",
-    "codeKey" : "NG_RATE_ALERT",
     "codeValue" : "1.0",
-    "description" : "NG 비율 경고",
+    "description" : "기본 NG 비율 임계값 (%)",
     "isActive" : true
   }, {
-    "id" : 46,
+    "id" : 2,
     "codeGroup" : "EVALUATION",
     "codeKey" : "INCREASE_RATE_THRESHOLD",
     "codeValue" : "2.0",
-    "description" : "증가율 임계값",
+    "description" : "NG 비율 급증 판단 기준 (증가율 배수)",
+    "isActive" : true
+  }, {
+    "id" : 3,
+    "codeGroup" : "INDUSTRY_AVERAGE",
+    "codeKey" : "NG_RATE",
+    "codeValue" : "0.8",
+    "description" : "업계 평균 NG 비율 (%)",
     "isActive" : true
   } ]
 }</code></pre>
@@ -793,13 +811,16 @@ Content-Length: 634
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/system-codes?codeGroup=INDUSTRY_AVERAGE HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMDYiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc2ODY2NTEzMSwiZXhwIjoxNzY5MDk3MTMxfQ.ismlR2-kIDpo_JyL_OQ0xA2B6DhmLlKStDVENW-1RD7JeI-UQ_Xkq9GZr-jMxwpOddf79RXR3lw955OyVByoyw
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODcsImV4cCI6MTc2OTE1MjQ4N30.fybtZrV27-QPMsv7BQUgaazUFh1qZRXVNK7D_jwyym_b048K_r7Me5Fw2rZxB_RnFYADcm-6o-v_3nQ1AF6-gg
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -807,24 +828,24 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 440
+Content-Length: 454
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : [ {
-    "id" : 41,
+    "id" : 3,
     "codeGroup" : "INDUSTRY_AVERAGE",
-    "codeKey" : "NG_RATE_ALERT",
-    "codeValue" : "1.0",
-    "description" : "NG 비율 경고",
+    "codeKey" : "NG_RATE",
+    "codeValue" : "0.8",
+    "description" : "업계 평균 NG 비율 (%)",
     "isActive" : true
   }, {
-    "id" : 40,
+    "id" : 1,
     "codeGroup" : "INDUSTRY_AVERAGE",
     "codeKey" : "NG_RATE_THRESHOLD",
-    "codeValue" : "0.5",
-    "description" : "NG 비율 임계값",
+    "codeValue" : "1.0",
+    "description" : "기본 NG 비율 임계값 (%)",
     "isActive" : true
   } ]
 }</code></pre>
@@ -841,13 +862,16 @@ Content-Length: 440
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/items HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2MSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjY1MTI4LCJleHAiOjE3NjkwOTcxMjh9.jL6tinbtVZVl7mYZGjmlp1NZds1G5c-BAG_yKh6-nqgiKUqkH8bzD6fuuqo88CWrmQMnloTUBbyeTpe2CKRKlw
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODYsImV4cCI6MTc2OTE1MjQ4Nn0.89GAy639-sIdStCpW027F-s92PWoOB1xFXVFrnCvZGV_WwXde3l4oRDYmv8VNoHLuVA6CxRXdxMN6O5A1cTqug
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -855,23 +879,41 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 353
+Content-Length: 862
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : [ {
-    "id" : 18,
+    "id" : 1,
     "code" : "ITEM001",
-    "name" : "부품1",
-    "description" : "부품1 설명",
-    "category" : "카테고리1"
+    "name" : "P2 부품",
+    "description" : "엔진 제어 부품",
+    "category" : "엔진"
   }, {
-    "id" : 19,
+    "id" : 2,
     "code" : "ITEM002",
-    "name" : "부품2",
-    "description" : "부품2 설명",
-    "category" : "카테고리2"
+    "name" : "8속 부품",
+    "description" : "변속기 부품",
+    "category" : "변속기"
+  }, {
+    "id" : 3,
+    "code" : "ITEM003",
+    "name" : "DCT 부품",
+    "description" : "듀얼 클러치 변속기 부품",
+    "category" : "변속기"
+  }, {
+    "id" : 4,
+    "code" : "ITEM004",
+    "name" : "브레이크 부품",
+    "description" : "브레이크 시스템 부품",
+    "category" : "브레이크"
+  }, {
+    "id" : 5,
+    "code" : "ITEM005",
+    "name" : "서스펜션 부품",
+    "description" : "서스펜션 시스템 부품",
+    "category" : "서스펜션"
   } ]
 }</code></pre>
 </div>
@@ -881,14 +923,17 @@ Content-Length: 353
 <h3 id="_부품_상세_조회">6.2. 부품 상세 조회</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/items/11 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzNyIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjY1MTI2LCJleHAiOjE3NjkwOTcxMjZ9.78Yowxi-kHoy2-pFVyJOp1kQN_fHwJiaKNelV_48qXhYjlwSxDNB-cNoYqxq2zt98NGT-lIGRFUTaRLdKbuhqA
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/items/1 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODYsImV4cCI6MTc2OTE1MjQ4Nn0.89GAy639-sIdStCpW027F-s92PWoOB1xFXVFrnCvZGV_WwXde3l4oRDYmv8VNoHLuVA6CxRXdxMN6O5A1cTqug
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -902,11 +947,11 @@ Content-Length: 202
   "status" : 200,
   "msg" : "성공",
   "body" : {
-    "id" : 11,
+    "id" : 1,
     "code" : "ITEM001",
-    "name" : "부품1",
-    "description" : "부품1 설명",
-    "category" : "카테고리1"
+    "name" : "P2 부품",
+    "description" : "엔진 제어 부품",
+    "category" : "엔진"
   }
 }</code></pre>
 </div>
@@ -918,21 +963,24 @@ Content-Length: 202
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/items HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI0NyIsInJvbGUiOiJNQU5BR0VSIiwiaWF0IjoxNzY4NjY1MTI3LCJleHAiOjE3NjkwOTcxMjd9.zFJowRYOmJzEgoJHQeFHyvis-wGy50T5XLNDz5Kfn4aFIQgKLhkz-PqmA7P4yD2pRGvLwKdnbWvuPHhhmclHiQ
-Content-Length: 119
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6Ik1BTkFHRVIiLCJpYXQiOjE3Njg3MjA0ODYsImV4cCI6MTc2OTE1MjQ4Nn0.5dRdbCdGcm42MHWWFw-xm6erKv3Nhhxed5vU2fNm6z4YjCClIVroIvNuHx1vuY55C2uKEwhQD5F-4DqOijId0w
+Content-Length: 128
 Host: localhost:8080
 
 {
-  "code" : "ITEM001",
-  "name" : "부품1",
-  "description" : "부품1 설명",
-  "category" : "카테고리1"
+  "code" : "ITEM999",
+  "name" : "새 부품",
+  "description" : "새 부품 설명",
+  "category" : "새 카테고리"
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -940,17 +988,17 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 202
+Content-Length: 210
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : {
-    "id" : 14,
-    "code" : "ITEM001",
-    "name" : "부품1",
-    "description" : "부품1 설명",
-    "category" : "카테고리1"
+    "id" : 6,
+    "code" : "ITEM999",
+    "name" : "새 부품",
+    "description" : "새 부품 설명",
+    "category" : "새 카테고리"
   }
 }</code></pre>
 </div>
@@ -960,9 +1008,9 @@ Content-Length: 202
 <h3 id="_부품_수정">6.4. 부품 수정</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /api/items/17 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /api/items/1 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1OSIsInJvbGUiOiJNQU5BR0VSIiwiaWF0IjoxNzY4NjY1MTI3LCJleHAiOjE3NjkwOTcxMjd9.CO9MDWgzYWei1kkALgk5_iTvobP7MOU4j_0NKstgWrUJAWuSoC51sWW36XrXz2kkNv_uzcuzdmc81TvxBFa3lw
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6Ik1BTkFHRVIiLCJpYXQiOjE3Njg3MjA0ODYsImV4cCI6MTc2OTE1MjQ4Nn0.5dRdbCdGcm42MHWWFw-xm6erKv3Nhhxed5vU2fNm6z4YjCClIVroIvNuHx1vuY55C2uKEwhQD5F-4DqOijId0w
 Content-Length: 114
 Host: localhost:8080
 
@@ -976,6 +1024,9 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -983,13 +1034,13 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 220
+Content-Length: 219
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : {
-    "id" : 17,
+    "id" : 1,
     "code" : "ITEM001",
     "name" : "부품1 수정",
     "description" : "수정된 설명",
@@ -1003,14 +1054,17 @@ Content-Length: 220
 <h3 id="_부품_삭제">6.5. 부품 삭제</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/items/16 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1NyIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODY2NTEyNywiZXhwIjoxNzY5MDk3MTI3fQ.kWEEibh2shW6CSlrEXGj7Li7OOSLO6r1Pa2lxL8Wktf3rLNj1a5gnagYtSwDq7Y61e_EgVnQVqDz03GU6wuyzg
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/items/1 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzY4NzIwNDg2LCJleHAiOjE3NjkxNTI0ODZ9.xU0oDU9ArWODd87rIRFaSjldFNTStahlw3_ZDdctpDF56LEd49crxDh_VNKu1RnYauSwIW6R8XL_0Uo15G9_Yw
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -1018,13 +1072,13 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 78
+Content-Length: 77
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : {
-    "id" : 16
+    "id" : 1
   }
 }</code></pre>
 </div>
@@ -1040,13 +1094,16 @@ Content-Length: 78
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/daily-productions HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyOCIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjY1MTI2LCJleHAiOjE3NjkwOTcxMjZ9.Azx4TIcC6FHPWaJnroEMybuvi29IFyKxcTsu5vG0RLSIwloLh5mUh23mQPqvx9tys6AjuR784mTRMOQZZdMSTg
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODUsImV4cCI6MTc2OTE1MjQ4NX0.aUlxGkTUKDEL1W-7cUVfHEBITYb8-_nW3ksmRM9MjCF6Yi1lPgbV2T6yN_G-bH28VkG97FxIqSp41EWzfrbpyQ
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -1054,21 +1111,101 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 275
+Content-Length: 2030
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : [ {
+    "id" : 1,
+    "itemId" : 1,
+    "productionDate" : "2026-01-12",
+    "totalQuantity" : 89342
+  }, {
+    "id" : 2,
+    "itemId" : 1,
+    "productionDate" : "2026-01-13",
+    "totalQuantity" : 92134
+  }, {
+    "id" : 3,
+    "itemId" : 1,
+    "productionDate" : "2026-01-14",
+    "totalQuantity" : 88756
+  }, {
+    "id" : 4,
+    "itemId" : 1,
+    "productionDate" : "2026-01-15",
+    "totalQuantity" : 95678
+  }, {
+    "id" : 5,
+    "itemId" : 1,
+    "productionDate" : "2026-01-16",
+    "totalQuantity" : 91234
+  }, {
+    "id" : 6,
+    "itemId" : 1,
+    "productionDate" : "2026-01-17",
+    "totalQuantity" : 93456
+  }, {
     "id" : 7,
-    "itemId" : 8,
-    "productionDate" : "2025-01-15",
-    "totalQuantity" : 1000
+    "itemId" : 1,
+    "productionDate" : "2026-01-18",
+    "totalQuantity" : 94567
   }, {
     "id" : 8,
-    "itemId" : 8,
-    "productionDate" : "2025-01-16",
-    "totalQuantity" : 2000
+    "itemId" : 2,
+    "productionDate" : "2026-01-13",
+    "totalQuantity" : 45231
+  }, {
+    "id" : 9,
+    "itemId" : 2,
+    "productionDate" : "2026-01-14",
+    "totalQuantity" : 46789
+  }, {
+    "id" : 10,
+    "itemId" : 2,
+    "productionDate" : "2026-01-15",
+    "totalQuantity" : 44321
+  }, {
+    "id" : 11,
+    "itemId" : 2,
+    "productionDate" : "2026-01-16",
+    "totalQuantity" : 48901
+  }, {
+    "id" : 12,
+    "itemId" : 2,
+    "productionDate" : "2026-01-17",
+    "totalQuantity" : 46543
+  }, {
+    "id" : 13,
+    "itemId" : 2,
+    "productionDate" : "2026-01-18",
+    "totalQuantity" : 47890
+  }, {
+    "id" : 14,
+    "itemId" : 3,
+    "productionDate" : "2026-01-14",
+    "totalQuantity" : 23456
+  }, {
+    "id" : 15,
+    "itemId" : 3,
+    "productionDate" : "2026-01-15",
+    "totalQuantity" : 24567
+  }, {
+    "id" : 16,
+    "itemId" : 3,
+    "productionDate" : "2026-01-16",
+    "totalQuantity" : 23890
+  }, {
+    "id" : 17,
+    "itemId" : 3,
+    "productionDate" : "2026-01-17",
+    "totalQuantity" : 25123
+  }, {
+    "id" : 18,
+    "itemId" : 3,
+    "productionDate" : "2026-01-18",
+    "totalQuantity" : 24678
   } ]
 }</code></pre>
 </div>
@@ -1078,14 +1215,17 @@ Content-Length: 275
 <h3 id="_일별_생산_상세_조회">7.2. 일별 생산 상세 조회</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/daily-productions/2 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMCIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjY1MTI0LCJleHAiOjE3NjkwOTcxMjR9.192_E1KEn2kq-45Kwocz43mhqeP1kg-2wG4eh6HWKchRkKtYbJw6MqIx69JYv2-QIzhDhAFrty23Ha8iI3FReA
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/daily-productions/7 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODUsImV4cCI6MTc2OTE1MjQ4NX0.aUlxGkTUKDEL1W-7cUVfHEBITYb8-_nW3ksmRM9MjCF6Yi1lPgbV2T6yN_G-bH28VkG97FxIqSp41EWzfrbpyQ
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -1093,16 +1233,16 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 163
+Content-Length: 164
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : {
-    "id" : 2,
-    "itemId" : 2,
-    "productionDate" : "2025-01-15",
-    "totalQuantity" : 1000
+    "id" : 7,
+    "itemId" : 1,
+    "productionDate" : "2026-01-18",
+    "totalQuantity" : 94567
   }
 }</code></pre>
 </div>
@@ -1114,12 +1254,12 @@ Content-Length: 163
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/daily-productions HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxOSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjY1MTI1LCJleHAiOjE3NjkwOTcxMjV9.3ErqEPBtHD5qJWFZJPzKoHZkP4r_-6odY-0QWFYvzEnEn-7ds5bUEVtfFsxmWwZu1WPcHOnNBePoLyc2ni_I8Q
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODUsImV4cCI6MTc2OTE1MjQ4NX0.aUlxGkTUKDEL1W-7cUVfHEBITYb8-_nW3ksmRM9MjCF6Yi1lPgbV2T6yN_G-bH28VkG97FxIqSp41EWzfrbpyQ
 Content-Length: 86
 Host: localhost:8080
 
 {
-  "itemId" : 5,
+  "itemId" : 1,
   "productionDate" : [ 2025, 1, 15 ],
   "totalQuantity" : 1000
 }</code></pre>
@@ -1128,6 +1268,9 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -1135,14 +1278,14 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 163
+Content-Length: 164
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : {
-    "id" : 5,
-    "itemId" : 5,
+    "id" : 22,
+    "itemId" : 1,
     "productionDate" : "2025-01-15",
     "totalQuantity" : 1000
   }
@@ -1154,9 +1297,9 @@ Content-Length: 163
 <h3 id="_일별_생산_수정">7.4. 일별 생산 수정</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /api/daily-productions/3 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /api/daily-productions/20 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMyIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjY1MTI1LCJleHAiOjE3NjkwOTcxMjV9.1e5TAxXmx4vLardYYVBTqR1vo4U1fWAuRWLsaCyjQitYhxOOqCwjnWMupF8fxUZlSCvdZl3ipryoyFYrvFC8LQ
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODUsImV4cCI6MTc2OTE1MjQ4NX0.aUlxGkTUKDEL1W-7cUVfHEBITYb8-_nW3ksmRM9MjCF6Yi1lPgbV2T6yN_G-bH28VkG97FxIqSp41EWzfrbpyQ
 Content-Length: 30
 Host: localhost:8080
 
@@ -1168,6 +1311,9 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -1175,14 +1321,14 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 163
+Content-Length: 164
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : {
-    "id" : 3,
-    "itemId" : 3,
+    "id" : 20,
+    "itemId" : 1,
     "productionDate" : "2025-01-15",
     "totalQuantity" : 2000
   }
@@ -1194,14 +1340,17 @@ Content-Length: 163
 <h3 id="_일별_생산_삭제">7.5. 일별 생산 삭제</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/daily-productions/6 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyMyIsInJvbGUiOiJNQU5BR0VSIiwiaWF0IjoxNzY4NjY1MTI1LCJleHAiOjE3NjkwOTcxMjV9.QjdbIi9960jMAUXmckV0pMESo0dqe_aeUuJv3olBOI953nPRmkWkscD0F3SFE8_gKZ1RfbnxY7Ebcvy8UnJgSA
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/daily-productions/23 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6Ik1BTkFHRVIiLCJpYXQiOjE3Njg3MjA0ODUsImV4cCI6MTc2OTE1MjQ4NX0.IdYgyOU8Ox3rM7ymJCKAw3XoHa6oF6e5gwKjrP97gzR-yVp7iyGlBUbUuouQCbMvd8V4_v_yHmguiWpErbVxhQ
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -1209,13 +1358,13 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 77
+Content-Length: 78
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : {
-    "id" : 6
+    "id" : 23
   }
 }</code></pre>
 </div>
@@ -1231,13 +1380,16 @@ Content-Length: 77
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quality-records HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMDMiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc2ODY2NTEzMSwiZXhwIjoxNzY5MDk3MTMxfQ.n6cno0KPYAkheWJc021uQl0jGLY03b2CiHn1wk2rAX4n0xDilAW76RBAAzoM51_Y-dG0K23_Kqg5SWr3ENTVuA
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODcsImV4cCI6MTc2OTE1MjQ4N30.fybtZrV27-QPMsv7BQUgaazUFh1qZRXVNK7D_jwyym_b048K_r7Me5Fw2rZxB_RnFYADcm-6o-v_3nQ1AF6-gg
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -1245,19 +1397,602 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 336
+Content-Length: 15082
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : [ {
+    "id" : 1,
+    "dailyProductionId" : 1,
+    "processId" : 1,
+    "okQuantity" : 88567,
+    "ngQuantity" : 775,
+    "totalQuantity" : 89342,
+    "ngRate" : 0.87,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 2,
+    "dailyProductionId" : 1,
+    "processId" : 2,
+    "okQuantity" : 88890,
+    "ngQuantity" : 452,
+    "totalQuantity" : 89342,
+    "ngRate" : 0.51,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 3,
+    "dailyProductionId" : 1,
+    "processId" : 3,
+    "okQuantity" : 88750,
+    "ngQuantity" : 592,
+    "totalQuantity" : 89342,
+    "ngRate" : 0.66,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 4,
+    "dailyProductionId" : 2,
+    "processId" : 1,
+    "okQuantity" : 91500,
+    "ngQuantity" : 634,
+    "totalQuantity" : 92134,
+    "ngRate" : 0.69,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 5,
+    "dailyProductionId" : 2,
+    "processId" : 2,
+    "okQuantity" : 91890,
+    "ngQuantity" : 244,
+    "totalQuantity" : 92134,
+    "ngRate" : 0.26,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 6,
+    "dailyProductionId" : 2,
+    "processId" : 3,
+    "okQuantity" : 91700,
+    "ngQuantity" : 434,
+    "totalQuantity" : 92134,
+    "ngRate" : 0.47,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 7,
+    "dailyProductionId" : 3,
+    "processId" : 1,
+    "okQuantity" : 88200,
+    "ngQuantity" : 556,
+    "totalQuantity" : 88756,
+    "ngRate" : 0.63,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 8,
+    "dailyProductionId" : 3,
+    "processId" : 2,
+    "okQuantity" : 88500,
+    "ngQuantity" : 256,
+    "totalQuantity" : 88756,
+    "ngRate" : 0.29,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 9,
+    "dailyProductionId" : 3,
+    "processId" : 3,
+    "okQuantity" : 88400,
+    "ngQuantity" : 356,
+    "totalQuantity" : 88756,
+    "ngRate" : 0.4,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 10,
+    "dailyProductionId" : 4,
+    "processId" : 1,
+    "okQuantity" : 94500,
+    "ngQuantity" : 1178,
+    "totalQuantity" : 95678,
+    "ngRate" : 1.23,
+    "expertEvaluation" : null,
+    "evaluationRequired" : true,
+    "evaluationReason" : null
+  }, {
+    "id" : 11,
+    "dailyProductionId" : 4,
+    "processId" : 2,
+    "okQuantity" : 94900,
+    "ngQuantity" : 778,
+    "totalQuantity" : 95678,
+    "ngRate" : 0.81,
+    "expertEvaluation" : null,
+    "evaluationRequired" : true,
+    "evaluationReason" : null
+  }, {
+    "id" : 12,
+    "dailyProductionId" : 4,
+    "processId" : 3,
+    "okQuantity" : 94700,
+    "ngQuantity" : 978,
+    "totalQuantity" : 95678,
+    "ngRate" : 1.02,
+    "expertEvaluation" : null,
+    "evaluationRequired" : true,
+    "evaluationReason" : null
+  }, {
+    "id" : 13,
+    "dailyProductionId" : 5,
+    "processId" : 1,
+    "okQuantity" : 90700,
+    "ngQuantity" : 534,
+    "totalQuantity" : 91234,
+    "ngRate" : 0.59,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 14,
+    "dailyProductionId" : 5,
+    "processId" : 2,
+    "okQuantity" : 90900,
+    "ngQuantity" : 334,
+    "totalQuantity" : 91234,
+    "ngRate" : 0.37,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 15,
+    "dailyProductionId" : 5,
+    "processId" : 3,
+    "okQuantity" : 90800,
+    "ngQuantity" : 434,
+    "totalQuantity" : 91234,
+    "ngRate" : 0.48,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 16,
+    "dailyProductionId" : 6,
+    "processId" : 1,
+    "okQuantity" : 92900,
+    "ngQuantity" : 556,
+    "totalQuantity" : 93456,
+    "ngRate" : 0.59,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 17,
+    "dailyProductionId" : 6,
+    "processId" : 2,
+    "okQuantity" : 93100,
+    "ngQuantity" : 356,
+    "totalQuantity" : 93456,
+    "ngRate" : 0.38,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 18,
+    "dailyProductionId" : 6,
+    "processId" : 3,
+    "okQuantity" : 93000,
+    "ngQuantity" : 456,
+    "totalQuantity" : 93456,
+    "ngRate" : 0.49,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 19,
+    "dailyProductionId" : 7,
+    "processId" : 1,
+    "okQuantity" : 94000,
+    "ngQuantity" : 567,
+    "totalQuantity" : 94567,
+    "ngRate" : 0.6,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 20,
+    "dailyProductionId" : 7,
+    "processId" : 2,
+    "okQuantity" : 94200,
+    "ngQuantity" : 367,
+    "totalQuantity" : 94567,
+    "ngRate" : 0.39,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 21,
+    "dailyProductionId" : 7,
+    "processId" : 3,
+    "okQuantity" : 94100,
+    "ngQuantity" : 467,
+    "totalQuantity" : 94567,
+    "ngRate" : 0.49,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 22,
+    "dailyProductionId" : 8,
+    "processId" : 1,
+    "okQuantity" : 44750,
+    "ngQuantity" : 481,
+    "totalQuantity" : 45231,
+    "ngRate" : 1.06,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 23,
+    "dailyProductionId" : 8,
+    "processId" : 2,
+    "okQuantity" : 44900,
+    "ngQuantity" : 331,
+    "totalQuantity" : 45231,
+    "ngRate" : 0.73,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 24,
+    "dailyProductionId" : 8,
+    "processId" : 3,
+    "okQuantity" : 44800,
+    "ngQuantity" : 431,
+    "totalQuantity" : 45231,
+    "ngRate" : 0.95,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 25,
+    "dailyProductionId" : 9,
+    "processId" : 1,
+    "okQuantity" : 46300,
+    "ngQuantity" : 489,
+    "totalQuantity" : 46789,
+    "ngRate" : 1.05,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
     "id" : 26,
-    "dailyProductionId" : 34,
-    "processId" : 26,
-    "okQuantity" : 900,
-    "ngQuantity" : 100,
-    "totalQuantity" : 1000,
-    "ngRate" : 10.0,
+    "dailyProductionId" : 9,
+    "processId" : 2,
+    "okQuantity" : 46450,
+    "ngQuantity" : 339,
+    "totalQuantity" : 46789,
+    "ngRate" : 0.72,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 27,
+    "dailyProductionId" : 9,
+    "processId" : 3,
+    "okQuantity" : 46380,
+    "ngQuantity" : 409,
+    "totalQuantity" : 46789,
+    "ngRate" : 0.87,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 28,
+    "dailyProductionId" : 10,
+    "processId" : 1,
+    "okQuantity" : 43850,
+    "ngQuantity" : 471,
+    "totalQuantity" : 44321,
+    "ngRate" : 1.06,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 29,
+    "dailyProductionId" : 10,
+    "processId" : 2,
+    "okQuantity" : 43980,
+    "ngQuantity" : 341,
+    "totalQuantity" : 44321,
+    "ngRate" : 0.77,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 30,
+    "dailyProductionId" : 10,
+    "processId" : 3,
+    "okQuantity" : 43920,
+    "ngQuantity" : 401,
+    "totalQuantity" : 44321,
+    "ngRate" : 0.9,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 31,
+    "dailyProductionId" : 11,
+    "processId" : 1,
+    "okQuantity" : 48450,
+    "ngQuantity" : 451,
+    "totalQuantity" : 48901,
+    "ngRate" : 0.92,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 32,
+    "dailyProductionId" : 11,
+    "processId" : 2,
+    "okQuantity" : 48580,
+    "ngQuantity" : 321,
+    "totalQuantity" : 48901,
+    "ngRate" : 0.66,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 33,
+    "dailyProductionId" : 11,
+    "processId" : 3,
+    "okQuantity" : 48520,
+    "ngQuantity" : 381,
+    "totalQuantity" : 48901,
+    "ngRate" : 0.78,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 34,
+    "dailyProductionId" : 12,
+    "processId" : 1,
+    "okQuantity" : 46050,
+    "ngQuantity" : 493,
+    "totalQuantity" : 46543,
+    "ngRate" : 1.06,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 35,
+    "dailyProductionId" : 12,
+    "processId" : 2,
+    "okQuantity" : 46200,
+    "ngQuantity" : 343,
+    "totalQuantity" : 46543,
+    "ngRate" : 0.74,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 36,
+    "dailyProductionId" : 12,
+    "processId" : 3,
+    "okQuantity" : 46140,
+    "ngQuantity" : 403,
+    "totalQuantity" : 46543,
+    "ngRate" : 0.87,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 37,
+    "dailyProductionId" : 13,
+    "processId" : 1,
+    "okQuantity" : 47450,
+    "ngQuantity" : 440,
+    "totalQuantity" : 47890,
+    "ngRate" : 0.92,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 38,
+    "dailyProductionId" : 13,
+    "processId" : 2,
+    "okQuantity" : 47580,
+    "ngQuantity" : 310,
+    "totalQuantity" : 47890,
+    "ngRate" : 0.65,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 39,
+    "dailyProductionId" : 13,
+    "processId" : 3,
+    "okQuantity" : 47520,
+    "ngQuantity" : 370,
+    "totalQuantity" : 47890,
+    "ngRate" : 0.77,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 40,
+    "dailyProductionId" : 14,
+    "processId" : 1,
+    "okQuantity" : 23100,
+    "ngQuantity" : 356,
+    "totalQuantity" : 23456,
+    "ngRate" : 1.52,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 41,
+    "dailyProductionId" : 14,
+    "processId" : 2,
+    "okQuantity" : 23200,
+    "ngQuantity" : 256,
+    "totalQuantity" : 23456,
+    "ngRate" : 1.09,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 42,
+    "dailyProductionId" : 14,
+    "processId" : 3,
+    "okQuantity" : 23150,
+    "ngQuantity" : 306,
+    "totalQuantity" : 23456,
+    "ngRate" : 1.3,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 43,
+    "dailyProductionId" : 15,
+    "processId" : 1,
+    "okQuantity" : 24200,
+    "ngQuantity" : 367,
+    "totalQuantity" : 24567,
+    "ngRate" : 1.49,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 44,
+    "dailyProductionId" : 15,
+    "processId" : 2,
+    "okQuantity" : 24300,
+    "ngQuantity" : 267,
+    "totalQuantity" : 24567,
+    "ngRate" : 1.09,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 45,
+    "dailyProductionId" : 15,
+    "processId" : 3,
+    "okQuantity" : 24250,
+    "ngQuantity" : 317,
+    "totalQuantity" : 24567,
+    "ngRate" : 1.29,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 46,
+    "dailyProductionId" : 16,
+    "processId" : 1,
+    "okQuantity" : 23550,
+    "ngQuantity" : 340,
+    "totalQuantity" : 23890,
+    "ngRate" : 1.42,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 47,
+    "dailyProductionId" : 16,
+    "processId" : 2,
+    "okQuantity" : 23650,
+    "ngQuantity" : 240,
+    "totalQuantity" : 23890,
+    "ngRate" : 1.0,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 48,
+    "dailyProductionId" : 16,
+    "processId" : 3,
+    "okQuantity" : 23600,
+    "ngQuantity" : 290,
+    "totalQuantity" : 23890,
+    "ngRate" : 1.21,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 49,
+    "dailyProductionId" : 17,
+    "processId" : 1,
+    "okQuantity" : 24800,
+    "ngQuantity" : 323,
+    "totalQuantity" : 25123,
+    "ngRate" : 1.29,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 50,
+    "dailyProductionId" : 17,
+    "processId" : 2,
+    "okQuantity" : 24900,
+    "ngQuantity" : 223,
+    "totalQuantity" : 25123,
+    "ngRate" : 0.89,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 51,
+    "dailyProductionId" : 17,
+    "processId" : 3,
+    "okQuantity" : 24850,
+    "ngQuantity" : 273,
+    "totalQuantity" : 25123,
+    "ngRate" : 1.09,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 52,
+    "dailyProductionId" : 18,
+    "processId" : 1,
+    "okQuantity" : 24350,
+    "ngQuantity" : 328,
+    "totalQuantity" : 24678,
+    "ngRate" : 1.33,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 53,
+    "dailyProductionId" : 18,
+    "processId" : 2,
+    "okQuantity" : 24450,
+    "ngQuantity" : 228,
+    "totalQuantity" : 24678,
+    "ngRate" : 0.92,
+    "expertEvaluation" : null,
+    "evaluationRequired" : false,
+    "evaluationReason" : null
+  }, {
+    "id" : 54,
+    "dailyProductionId" : 18,
+    "processId" : 3,
+    "okQuantity" : 24400,
+    "ngQuantity" : 278,
+    "totalQuantity" : 24678,
+    "ngRate" : 1.13,
     "expertEvaluation" : null,
     "evaluationRequired" : false,
     "evaluationReason" : null
@@ -1270,14 +2005,17 @@ Content-Length: 336
 <h3 id="_품질_기록_상세_조회">8.2. 품질 기록 상세 조회</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quality-records/5 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3MyIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjY1MTI4LCJleHAiOjE3NjkwOTcxMjh9.OmqXXv1aC9Qbjgmrzta4XKRkFhjoDdUON6w75DP9CSsfonefFzqwln2J14_-SlbqhN-o-gkWflThCWmb4gDs6A
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quality-records/59 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODYsImV4cCI6MTc2OTE1MjQ4Nn0.89GAy639-sIdStCpW027F-s92PWoOB1xFXVFrnCvZGV_WwXde3l4oRDYmv8VNoHLuVA6CxRXdxMN6O5A1cTqug
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -1285,15 +2023,15 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 384
+Content-Length: 385
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : {
-    "id" : 5,
-    "dailyProductionId" : 13,
-    "processId" : 9,
+    "id" : 59,
+    "dailyProductionId" : 28,
+    "processId" : 1,
     "okQuantity" : 900,
     "ngQuantity" : 100,
     "totalQuantity" : 1000,
@@ -1314,13 +2052,13 @@ Content-Length: 384
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/quality-records HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI5NSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjY1MTMwLCJleHAiOjE3NjkwOTcxMzB9.JaBo9--Pf3uAODYG1O8aFMPC2n00Vw21zJaY8Jrf-mTTNVP6suia4rcj2NVjlSd7l54bCQgW8uYd_VMLvvNZOg
-Content-Length: 99
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODcsImV4cCI6MTc2OTE1MjQ4N30.fybtZrV27-QPMsv7BQUgaazUFh1qZRXVNK7D_jwyym_b048K_r7Me5Fw2rZxB_RnFYADcm-6o-v_3nQ1AF6-gg
+Content-Length: 98
 Host: localhost:8080
 
 {
-  "dailyProductionId" : 29,
-  "processId" : 22,
+  "dailyProductionId" : 44,
+  "processId" : 1,
   "okQuantity" : 900,
   "ngQuantity" : 100
 }</code></pre>
@@ -1329,6 +2067,9 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -1336,15 +2077,15 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 323
+Content-Length: 322
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : {
-    "id" : 21,
-    "dailyProductionId" : 29,
-    "processId" : 22,
+    "id" : 75,
+    "dailyProductionId" : 44,
+    "processId" : 1,
     "okQuantity" : 900,
     "ngQuantity" : 100,
     "totalQuantity" : 1000,
@@ -1360,9 +2101,9 @@ Content-Length: 323
 <h3 id="_품질_기록_수정">8.4. 품질 기록 수정</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /api/quality-records/10 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /api/quality-records/64 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI4MSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjY1MTI5LCJleHAiOjE3NjkwOTcxMjl9.CBQi8iETWVfQpN87xphhEZwLIITWpRk902DjEK9MClhjkrQKVPN4zlWGp4dlEtNwwTKvKP6bIowsODESQPrmwA
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODYsImV4cCI6MTc2OTE1MjQ4Nn0.89GAy639-sIdStCpW027F-s92PWoOB1xFXVFrnCvZGV_WwXde3l4oRDYmv8VNoHLuVA6CxRXdxMN6O5A1cTqug
 Content-Length: 49
 Host: localhost:8080
 
@@ -1375,6 +2116,9 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -1382,15 +2126,15 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 323
+Content-Length: 322
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : {
-    "id" : 10,
-    "dailyProductionId" : 18,
-    "processId" : 14,
+    "id" : 64,
+    "dailyProductionId" : 33,
+    "processId" : 1,
     "okQuantity" : 850,
     "ngQuantity" : 150,
     "totalQuantity" : 1000,
@@ -1406,14 +2150,17 @@ Content-Length: 323
 <h3 id="_품질_기록_삭제">8.5. 품질 기록 삭제</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/quality-records/22 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI5OCIsInJvbGUiOiJNQU5BR0VSIiwiaWF0IjoxNzY4NjY1MTMwLCJleHAiOjE3NjkwOTcxMzB9.PrxBdgsm0oLsm3XgR5vmmIFAqj10_dsu0Ztgs2PJYK891igMA2nfKT90l1s4nFTq6u02Y0go7GbnkgACelY2uA
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/quality-records/76 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6Ik1BTkFHRVIiLCJpYXQiOjE3Njg3MjA0ODcsImV4cCI6MTc2OTE1MjQ4N30.tFAuIOWjHsYKQy9b31SPftGxsBVCUylcstkQLPNxY2u5NSfyyBVCTX4UWxXs3GuqLpb0nQI64RniiCF49nHbWg
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -1427,7 +2174,7 @@ Content-Length: 78
   "status" : 200,
   "msg" : "성공",
   "body" : {
-    "id" : 22
+    "id" : 76
   }
 }</code></pre>
 </div>
@@ -1435,23 +2182,25 @@ Content-Length: 78
 </div>
 <div class="sect2">
 <h3 id="_품질_기록_평가">8.6. 품질 기록 평가</h3>
-<div class="paragraph">
-<p>Unresolved directive in api.adoc - include::C:\workspace\job_lab\q-track-backend\build\generated-snippets/qualityrecord-evaluate/http-request.adoc[]
-Unresolved directive in api.adoc - include::C:\workspace\job_lab\q-track-backend\build\generated-snippets/qualityrecord-evaluate/http-response.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_평가_필요_목록_조회">8.7. 평가 필요 목록 조회</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quality-records/evaluation-required HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI4NyIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjY1MTI5LCJleHAiOjE3NjkwOTcxMjl9.D_Dqiund88m034Csy5sFBpUY2DD8VaFoIJvBHYKq98eEBFMDZPZxlsQcb1kpU8p09KW-GShZ6fqrVOZT5_HkUg
-Host: localhost:8080</code></pre>
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /api/quality-records/65/evaluate HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODYsImV4cCI6MTc2OTE1MjQ4Nn0.89GAy639-sIdStCpW027F-s92PWoOB1xFXVFrnCvZGV_WwXde3l4oRDYmv8VNoHLuVA6CxRXdxMN6O5A1cTqug
+Content-Length: 64
+Host: localhost:8080
+
+{
+  "expertEvaluation" : "재료 품질 이슈로 판단됨"
+}</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -1459,15 +2208,87 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 357
+Content-Length: 270
+
+{
+  "status" : 200,
+  "msg" : "성공",
+  "body" : {
+    "id" : 65,
+    "dailyProductionId" : 34,
+    "processId" : 1,
+    "expertEvaluation" : "재료 품질 이슈로 판단됨",
+    "evaluatedBy" : 1,
+    "evaluatedAt" : "2026-01-18T16:14:46.8721005"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_평가_필요_목록_조회">8.7. 평가 필요 목록 조회</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quality-records/evaluation-required HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODYsImV4cCI6MTc2OTE1MjQ4Nn0.89GAy639-sIdStCpW027F-s92PWoOB1xFXVFrnCvZGV_WwXde3l4oRDYmv8VNoHLuVA6CxRXdxMN6O5A1cTqug
+Host: localhost:8080</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: SAMEORIGIN
+Content-Length: 1188
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : [ {
-    "id" : 13,
-    "dailyProductionId" : 21,
-    "processId" : 17,
+    "id" : 10,
+    "dailyProductionId" : 4,
+    "processId" : 1,
+    "okQuantity" : 94500,
+    "ngQuantity" : 1178,
+    "totalQuantity" : 95678,
+    "ngRate" : 1.23,
+    "expertEvaluation" : null,
+    "evaluationRequired" : true,
+    "evaluationReason" : null
+  }, {
+    "id" : 11,
+    "dailyProductionId" : 4,
+    "processId" : 2,
+    "okQuantity" : 94900,
+    "ngQuantity" : 778,
+    "totalQuantity" : 95678,
+    "ngRate" : 0.81,
+    "expertEvaluation" : null,
+    "evaluationRequired" : true,
+    "evaluationReason" : null
+  }, {
+    "id" : 12,
+    "dailyProductionId" : 4,
+    "processId" : 3,
+    "okQuantity" : 94700,
+    "ngQuantity" : 978,
+    "totalQuantity" : 95678,
+    "ngRate" : 1.02,
+    "expertEvaluation" : null,
+    "evaluationRequired" : true,
+    "evaluationReason" : null
+  }, {
+    "id" : 67,
+    "dailyProductionId" : 36,
+    "processId" : 1,
     "okQuantity" : 950,
     "ngQuantity" : 50,
     "totalQuantity" : 1000,
@@ -1490,13 +2311,16 @@ Content-Length: 357
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quality-records/statistics/by-process HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3MSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjY1MTI4LCJleHAiOjE3NjkwOTcxMjh9.lAXoDIZ0ejAGEBpvnIYCX-y1Cn31EFNfsZReXLBqU-HjvdNhbyWXRE4i1dyTb0oRI3bvIC7CYahK2YbLwhwPlw
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODYsImV4cCI6MTc2OTE1MjQ4Nn0.89GAy639-sIdStCpW027F-s92PWoOB1xFXVFrnCvZGV_WwXde3l4oRDYmv8VNoHLuVA6CxRXdxMN6O5A1cTqug
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -1504,25 +2328,39 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 391
+Content-Length: 738
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : [ {
-    "processId" : 8,
+    "processId" : 4,
     "processCode" : "P",
     "processName" : "제조",
     "totalNgQuantity" : 50,
     "totalQuantity" : 500,
     "ngRate" : 10.0
   }, {
-    "processId" : 7,
+    "processId" : 2,
+    "processCode" : "P",
+    "processName" : "제조",
+    "totalNgQuantity" : 5986,
+    "totalQuantity" : 1046556,
+    "ngRate" : 0.57
+  }, {
+    "processId" : 1,
     "processCode" : "W",
     "processName" : "작업",
-    "totalNgQuantity" : 100,
-    "totalQuantity" : 1000,
-    "ngRate" : 10.0
+    "totalNgQuantity" : 9439,
+    "totalQuantity" : 1047556,
+    "ngRate" : 0.9
+  }, {
+    "processId" : 3,
+    "processCode" : "검",
+    "processName" : "검사",
+    "totalNgQuantity" : 7576,
+    "totalQuantity" : 1046556,
+    "ngRate" : 0.72
   } ]
 }</code></pre>
 </div>
@@ -1533,13 +2371,16 @@ Content-Length: 391
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quality-records/statistics/by-item HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI5MSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjY1MTMwLCJleHAiOjE3NjkwOTcxMzB9.nbXiiSLANIIeJDfgxvoVWJzzsUn4-eOspStmgPhHdjdHYcRzD-Wg7bS5FI8W_r-IkDhLa_zKOAJ05ekenzqE1w
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3Njg3MjA0ODYsImV4cCI6MTc2OTE1MjQ4Nn0.89GAy639-sIdStCpW027F-s92PWoOB1xFXVFrnCvZGV_WwXde3l4oRDYmv8VNoHLuVA6CxRXdxMN6O5A1cTqug
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -1547,25 +2388,32 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 389
+Content-Length: 573
 
 {
   "status" : 200,
   "msg" : "성공",
   "body" : [ {
-    "itemId" : 32,
+    "itemId" : 1,
     "itemCode" : "ITEM001",
-    "itemName" : "부품1",
-    "totalNgQuantity" : 100,
-    "totalQuantity" : 1000,
-    "ngRate" : 10.0
+    "itemName" : "P2 부품",
+    "totalNgQuantity" : 11404,
+    "totalQuantity" : 1936501,
+    "ngRate" : 0.59
   }, {
-    "itemId" : 33,
+    "itemId" : 2,
     "itemCode" : "ITEM002",
-    "itemName" : "부품2",
-    "totalNgQuantity" : 50,
-    "totalQuantity" : 500,
-    "ngRate" : 10.0
+    "itemName" : "8속 부품",
+    "totalNgQuantity" : 7255,
+    "totalQuantity" : 839525,
+    "ngRate" : 0.86
+  }, {
+    "itemId" : 3,
+    "itemCode" : "ITEM003",
+    "itemName" : "DCT 부품",
+    "totalNgQuantity" : 4392,
+    "totalQuantity" : 365142,
+    "ngRate" : 1.2
   } ]
 }</code></pre>
 </div>
