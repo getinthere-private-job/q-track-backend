@@ -4,6 +4,8 @@ import dev.dote.qtrack._core.errors.ex.Exception400;
 import dev.dote.qtrack.item.Item;
 import dev.dote.qtrack.item.ItemRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,15 @@ public class DailyProductionService {
                         dp.getProductionDate(),
                         dp.getTotalQuantity()))
                 .toList();
+    }
+
+    public Page<DailyProductionResponse.List> findAll(Pageable pageable) {
+        return dailyProductionRepository.findAllWithItemPageable(pageable)
+                .map(dp -> new DailyProductionResponse.List(
+                        dp.getId(),
+                        dp.getItem().getId(),
+                        dp.getProductionDate(),
+                        dp.getTotalQuantity()));
     }
 
     public DailyProductionResponse.Get findById(Long id) {

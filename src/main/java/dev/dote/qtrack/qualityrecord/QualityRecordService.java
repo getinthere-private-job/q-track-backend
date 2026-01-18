@@ -9,6 +9,8 @@ import dev.dote.qtrack.systemcode.SystemCodeService;
 import dev.dote.qtrack.user.User;
 import dev.dote.qtrack.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +53,35 @@ public class QualityRecordService {
                         qr.getEvaluationRequired(),
                         qr.getEvaluationReason()))
                 .toList();
+    }
+
+    public Page<QualityRecordResponse.List> findAll(Pageable pageable, LocalDate productionDate, Integer year, Integer month) {
+        // year와 month를 LocalDate 범위로 변환
+        LocalDate startDate = null;
+        LocalDate endDate = null;
+        
+        if (year != null && month != null) {
+            // 특정 년월: 해당 월의 시작일 ~ 종료일
+            startDate = LocalDate.of(year, month, 1);
+            endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+        } else if (year != null) {
+            // 특정 년도: 해당 년도의 시작일 ~ 종료일
+            startDate = LocalDate.of(year, 1, 1);
+            endDate = LocalDate.of(year, 12, 31);
+        }
+        
+        return qualityRecordRepository.findAllWithFilters(pageable, productionDate, startDate, endDate)
+                .map(qr -> new QualityRecordResponse.List(
+                        qr.getId(),
+                        qr.getDailyProduction().getId(),
+                        qr.getProcess().getId(),
+                        qr.getOkQuantity(),
+                        qr.getNgQuantity(),
+                        qr.getTotalQuantity(),
+                        qr.getNgRate(),
+                        qr.getExpertEvaluation(),
+                        qr.getEvaluationRequired(),
+                        qr.getEvaluationReason()));
     }
 
     public List<QualityRecordResponse.List> getEvaluationRequiredList() {

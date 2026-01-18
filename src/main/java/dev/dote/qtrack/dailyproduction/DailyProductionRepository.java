@@ -1,6 +1,8 @@
 package dev.dote.qtrack.dailyproduction;
 
 import dev.dote.qtrack.item.Item;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +18,10 @@ public interface DailyProductionRepository extends JpaRepository<DailyProduction
 
     @Query("SELECT dp FROM DailyProduction dp JOIN FETCH dp.item")
     List<DailyProduction> findAllWithItem();
+
+    @Query(value = "SELECT dp FROM DailyProduction dp JOIN dp.item",
+            countQuery = "SELECT COUNT(dp) FROM DailyProduction dp")
+    Page<DailyProduction> findAllWithItemPageable(Pageable pageable);
 
     @Query("SELECT dp FROM DailyProduction dp JOIN FETCH dp.item WHERE dp.id = :id")
     Optional<DailyProduction> findByIdWithItem(@Param("id") Long id);

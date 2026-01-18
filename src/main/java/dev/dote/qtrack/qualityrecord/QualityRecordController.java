@@ -3,6 +3,9 @@ package dev.dote.qtrack.qualityrecord;
 import dev.dote.qtrack._core.util.Resp;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,8 +28,12 @@ public class QualityRecordController {
     private final QualityRecordService qualityRecordService;
 
     @GetMapping
-    public ResponseEntity<Resp<List<QualityRecordResponse.List>>> findAll() {
-        List<QualityRecordResponse.List> response = qualityRecordService.findAll();
+    public ResponseEntity<Resp<Page<QualityRecordResponse.List>>> findAll(
+            @PageableDefault(size = 20) Pageable pageable,
+            @RequestParam(required = false) LocalDate productionDate,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month) {
+        Page<QualityRecordResponse.List> response = qualityRecordService.findAll(pageable, productionDate, year, month);
         return Resp.ok(response);
     }
 
