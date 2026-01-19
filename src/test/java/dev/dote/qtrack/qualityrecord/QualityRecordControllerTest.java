@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
@@ -27,6 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.dote.qtrack._core.security.JwtUtil;
 import dev.dote.qtrack.dailyproduction.DailyProduction;
@@ -59,7 +61,9 @@ class QualityRecordControllerTest {
 
         private MockMvc mvc;
 
-        private ObjectMapper om = new ObjectMapper().registerModule(new JavaTimeModule());
+        private ObjectMapper om = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         @Autowired
         private QualityRecordRepository qualityRecordRepository;
@@ -139,32 +143,40 @@ class QualityRecordControllerTest {
                 result.andExpect(status().isOk())
                                 .andExpect(jsonPath("$.status").value(200))
                                 .andExpect(jsonPath("$.msg").value("성공"))
-                                .andExpect(jsonPath("$.body").isArray())
-                                .andExpect(jsonPath("$.body.length()")
+                                .andExpect(jsonPath("$.body.content").isArray())
+                                .andExpect(jsonPath("$.body.content.length()")
                                                 .value(org.hamcrest.Matchers.greaterThanOrEqualTo(1)))
+                                .andExpect(jsonPath("$.body.totalElements").exists())
+                                .andExpect(jsonPath("$.body.totalPages").exists())
                                 .andDo(MockMvcRestDocumentation.document("qualityrecord-findAll",
                                                 requestHeaders(
                                                                 headerWithName("Authorization").description(
                                                                                 "JWT 토큰 (Bearer {token})")),
-                                                responseFields(
+                                                relaxedResponseFields(
                                                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                                                 fieldWithPath("msg").description("응답 메시지"),
-                                                                fieldWithPath("body[]").description("품질 기록 목록"),
-                                                                fieldWithPath("body[].id").description("품질 기록 ID"),
-                                                                fieldWithPath("body[].dailyProductionId")
+                                                                fieldWithPath("body.content[]").description("품질 기록 목록"),
+                                                                fieldWithPath("body.content[].id").description("품질 기록 ID"),
+                                                                fieldWithPath("body.content[].dailyProductionId")
                                                                                 .description("일별 생산 데이터 ID"),
-                                                                fieldWithPath("body[].processId").description("공정 ID"),
-                                                                fieldWithPath("body[].okQuantity").description("OK 수량"),
-                                                                fieldWithPath("body[].ngQuantity").description("NG 수량"),
-                                                                fieldWithPath("body[].totalQuantity")
+                                                                fieldWithPath("body.content[].processId").description("공정 ID"),
+                                                                fieldWithPath("body.content[].okQuantity").description("OK 수량"),
+                                                                fieldWithPath("body.content[].ngQuantity").description("NG 수량"),
+                                                                fieldWithPath("body.content[].totalQuantity")
                                                                                 .description("총 수량"),
-                                                                fieldWithPath("body[].ngRate").description("NG 비율 (%)"),
-                                                                fieldWithPath("body[].expertEvaluation")
+                                                                fieldWithPath("body.content[].ngRate").description("NG 비율 (%)"),
+                                                                fieldWithPath("body.content[].expertEvaluation")
                                                                                 .description("전문가 평가"),
-                                                                fieldWithPath("body[].evaluationRequired")
+                                                                fieldWithPath("body.content[].evaluationRequired")
                                                                                 .description("평가 필요 여부"),
-                                                                fieldWithPath("body[].evaluationReason")
-                                                                                .description("평가 필요 사유"))));
+                                                                fieldWithPath("body.content[].evaluationReason")
+                                                                                .description("평가 필요 사유"),
+                                                                fieldWithPath("body.totalElements").description("전체 요소 수"),
+                                                                fieldWithPath("body.totalPages").description("전체 페이지 수"),
+                                                                fieldWithPath("body.number").description("현재 페이지 번호"),
+                                                                fieldWithPath("body.size").description("페이지 크기"),
+                                                                fieldWithPath("body.first").description("첫 페이지 여부"),
+                                                                fieldWithPath("body.last").description("마지막 페이지 여부"))));
         }
 
         @Test

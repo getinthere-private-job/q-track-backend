@@ -1,6 +1,8 @@
 package dev.dote.qtrack.qualityrecord;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class QualityRecordResponse {
@@ -28,7 +30,7 @@ public class QualityRecordResponse {
             String expertEvaluation,
             Boolean evaluationRequired,
             String evaluationReason,
-            LocalDateTime evaluatedAt,
+            @JsonFormat(pattern = "yyyy-MM-dd") LocalDate evaluatedAt,
             Long evaluatedBy) {  // String → Long (User ID)
     }
 
@@ -65,7 +67,7 @@ public class QualityRecordResponse {
             Long processId,
             String expertEvaluation,
             Long evaluatedBy,
-            LocalDateTime evaluatedAt) {
+            @JsonFormat(pattern = "yyyy-MM-dd") LocalDate evaluatedAt) {
     }
 
     public record StatisticsByProcess(

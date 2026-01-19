@@ -5,6 +5,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import dev.dote.qtrack._core.security.JwtUtil;
@@ -52,7 +54,9 @@ class DailyProductionControllerTest {
 
         private MockMvc mvc;
 
-        private ObjectMapper om = new ObjectMapper().registerModule(new JavaTimeModule());
+        private ObjectMapper om = new ObjectMapper()
+                        .registerModule(new JavaTimeModule())
+                        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         @Autowired
         private DailyProductionRepository dailyProductionRepository;
@@ -115,29 +119,45 @@ class DailyProductionControllerTest {
                 result.andExpect(status().isOk())
                                 .andExpect(jsonPath("$.status").value(200))
                                 .andExpect(jsonPath("$.msg").value("성공"))
-                                .andExpect(jsonPath("$.body").isArray())
-                                .andExpect(jsonPath("$.body.length()").value(org.hamcrest.Matchers.greaterThanOrEqualTo(2)))
+                                .andExpect(jsonPath("$.body.content").isArray())
+                                .andExpect(jsonPath("$.body.content.length()")
+                                                .value(org.hamcrest.Matchers.greaterThanOrEqualTo(2)))
+                                .andExpect(jsonPath("$.body.totalElements").exists())
+                                .andExpect(jsonPath("$.body.totalPages").exists())
                                 .andDo(MockMvcRestDocumentation.document("dailyproduction-findAll",
                                                 requestHeaders(
-                                                                headerWithName("Authorization").description("JWT 토큰 (Bearer {token})")
-                                                ),
-                                                responseFields(
+                                                                headerWithName("Authorization").description(
+                                                                                "JWT 토큰 (Bearer {token})")),
+                                                relaxedResponseFields(
                                                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                                                 fieldWithPath("msg").description("응답 메시지"),
-                                                                fieldWithPath("body[]").description("일별 생산 데이터 목록"),
-                                                                fieldWithPath("body[].id").description("일별 생산 데이터 ID"),
-                                                                fieldWithPath("body[].itemId").description("부품 ID"),
-                                                                fieldWithPath("body[].productionDate").description("생산일"),
-                                                                fieldWithPath("body[].totalQuantity").description("총 생산 수량")
-                                                )
-                                ));
+                                                                fieldWithPath("body.content[]")
+                                                                                .description("일별 생산 데이터 목록"),
+                                                                fieldWithPath("body.content[].id")
+                                                                                .description("일별 생산 데이터 ID"),
+                                                                fieldWithPath("body.content[].itemId")
+                                                                                .description("부품 ID"),
+                                                                fieldWithPath("body.content[].productionDate")
+                                                                                .description("생산일"),
+                                                                fieldWithPath("body.content[].totalQuantity")
+                                                                                .description("총 생산 수량"),
+                                                                fieldWithPath("body.totalElements")
+                                                                                .description("전체 요소 수"),
+                                                                fieldWithPath("body.totalPages")
+                                                                                .description("전체 페이지 수"),
+                                                                fieldWithPath("body.number").description("현재 페이지 번호"),
+                                                                fieldWithPath("body.size").description("페이지 크기"),
+                                                                fieldWithPath("body.first").description("첫 페이지 여부"),
+                                                                fieldWithPath("body.last").description("마지막 페이지 여부"))));
         }
 
         @Test
         void findById_test() throws Exception {
                 // given - data-dev.sql의 오늘 날짜 DailyProduction 사용
-                DailyProduction dp = dailyProductionRepository.findByItemAndProductionDateWithItem(testItem, LocalDate.now())
-                                .orElseThrow(() -> new RuntimeException("data-dev.sql의 오늘자 DailyProduction을 찾을 수 없습니다"));
+                DailyProduction dp = dailyProductionRepository
+                                .findByItemAndProductionDateWithItem(testItem, LocalDate.now())
+                                .orElseThrow(() -> new RuntimeException(
+                                                "data-dev.sql의 오늘자 DailyProduction을 찾을 수 없습니다"));
                 Long dpId = dp.getId();
 
                 // when
@@ -155,20 +175,18 @@ class DailyProductionControllerTest {
                                 .andExpect(jsonPath("$.body.totalQuantity").exists())
                                 .andDo(MockMvcRestDocumentation.document("dailyproduction-findById",
                                                 pathParameters(
-                                                                parameterWithName("id").description("일별 생산 데이터 ID")
-                                                ),
+                                                                parameterWithName("id").description("일별 생산 데이터 ID")),
                                                 requestHeaders(
-                                                                headerWithName("Authorization").description("JWT 토큰 (Bearer {token})")
-                                                ),
+                                                                headerWithName("Authorization").description(
+                                                                                "JWT 토큰 (Bearer {token})")),
                                                 responseFields(
                                                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                                                 fieldWithPath("msg").description("응답 메시지"),
                                                                 fieldWithPath("body.id").description("일별 생산 데이터 ID"),
                                                                 fieldWithPath("body.itemId").description("부품 ID"),
                                                                 fieldWithPath("body.productionDate").description("생산일"),
-                                                                fieldWithPath("body.totalQuantity").description("총 생산 수량")
-                                                )
-                                ));
+                                                                fieldWithPath("body.totalQuantity")
+                                                                                .description("총 생산 수량"))));
         }
 
         @Test
@@ -197,22 +215,22 @@ class DailyProductionControllerTest {
                                 .andExpect(jsonPath("$.body.totalQuantity").value(1000))
                                 .andDo(MockMvcRestDocumentation.document("dailyproduction-create",
                                                 requestHeaders(
-                                                                headerWithName("Authorization").description("JWT 토큰 (Bearer {token})")
-                                                ),
+                                                                headerWithName("Authorization").description(
+                                                                                "JWT 토큰 (Bearer {token})")),
                                                 requestFields(
                                                                 fieldWithPath("itemId").description("부품 ID"),
-                                                                fieldWithPath("productionDate").description("생산일 (yyyy-MM-dd)"),
-                                                                fieldWithPath("totalQuantity").description("총 생산 수량")
-                                                ),
+                                                                fieldWithPath("productionDate")
+                                                                                .description("생산일 (yyyy-MM-dd)"),
+                                                                fieldWithPath("totalQuantity").description("총 생산 수량")),
                                                 responseFields(
                                                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                                                 fieldWithPath("msg").description("응답 메시지"),
-                                                                fieldWithPath("body.id").description("생성된 일별 생산 데이터 ID"),
+                                                                fieldWithPath("body.id")
+                                                                                .description("생성된 일별 생산 데이터 ID"),
                                                                 fieldWithPath("body.itemId").description("부품 ID"),
                                                                 fieldWithPath("body.productionDate").description("생산일"),
-                                                                fieldWithPath("body.totalQuantity").description("총 생산 수량")
-                                                )
-                                ));
+                                                                fieldWithPath("body.totalQuantity")
+                                                                                .description("총 생산 수량"))));
         }
 
         @Test
@@ -288,23 +306,20 @@ class DailyProductionControllerTest {
                                 .andExpect(jsonPath("$.body.totalQuantity").value(2000))
                                 .andDo(MockMvcRestDocumentation.document("dailyproduction-update",
                                                 pathParameters(
-                                                                parameterWithName("id").description("일별 생산 데이터 ID")
-                                                ),
+                                                                parameterWithName("id").description("일별 생산 데이터 ID")),
                                                 requestHeaders(
-                                                                headerWithName("Authorization").description("JWT 토큰 (Bearer {token})")
-                                                ),
+                                                                headerWithName("Authorization").description(
+                                                                                "JWT 토큰 (Bearer {token})")),
                                                 requestFields(
-                                                                fieldWithPath("totalQuantity").description("총 생산 수량")
-                                                ),
+                                                                fieldWithPath("totalQuantity").description("총 생산 수량")),
                                                 responseFields(
                                                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                                                 fieldWithPath("msg").description("응답 메시지"),
                                                                 fieldWithPath("body.id").description("일별 생산 데이터 ID"),
                                                                 fieldWithPath("body.itemId").description("부품 ID"),
                                                                 fieldWithPath("body.productionDate").description("생산일"),
-                                                                fieldWithPath("body.totalQuantity").description("총 생산 수량")
-                                                )
-                                ));
+                                                                fieldWithPath("body.totalQuantity")
+                                                                                .description("총 생산 수량"))));
         }
 
         @Test
@@ -326,17 +341,15 @@ class DailyProductionControllerTest {
                                 .andExpect(jsonPath("$.body.id").value(dpId.intValue()))
                                 .andDo(MockMvcRestDocumentation.document("dailyproduction-delete",
                                                 pathParameters(
-                                                                parameterWithName("id").description("일별 생산 데이터 ID")
-                                                ),
+                                                                parameterWithName("id").description("일별 생산 데이터 ID")),
                                                 requestHeaders(
-                                                                headerWithName("Authorization").description("JWT 토큰 (Bearer {token}) - MANAGER 이상 권한 필요")
-                                                ),
+                                                                headerWithName("Authorization").description(
+                                                                                "JWT 토큰 (Bearer {token}) - MANAGER 이상 권한 필요")),
                                                 responseFields(
                                                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                                                 fieldWithPath("msg").description("응답 메시지"),
-                                                                fieldWithPath("body.id").description("삭제된 일별 생산 데이터 ID")
-                                                )
-                                ));
+                                                                fieldWithPath("body.id")
+                                                                                .description("삭제된 일별 생산 데이터 ID"))));
         }
 
         @Test

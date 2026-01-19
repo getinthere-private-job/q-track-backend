@@ -19,6 +19,11 @@ public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
 
+    @GetMapping("/health")
+    public String health() {
+        return "ok";
+    }
+
     @PostMapping("/signup")
     public ResponseEntity<Resp<UserResponse.Signup>> signup(@Valid @RequestBody UserRequest.Signup request) {
         UserResponse.Signup response = userService.signup(request.username(), request.password(), request.role());

@@ -114,7 +114,7 @@ public class QualityRecordService {
                 qualityRecord.getExpertEvaluation(),
                 qualityRecord.getEvaluationRequired(),
                 qualityRecord.getEvaluationReason(),
-                qualityRecord.getEvaluatedAt(),
+                qualityRecord.getEvaluatedAt() != null ? qualityRecord.getEvaluatedAt().toLocalDate() : null,
                 qualityRecord.getEvaluatedBy() != null ? qualityRecord.getEvaluatedBy().getId() : null);
     }
 
@@ -210,7 +210,7 @@ public class QualityRecordService {
                 updated.getProcess().getId(),
                 updated.getExpertEvaluation(),
                 updated.getEvaluatedBy().getId(),
-                updated.getEvaluatedAt());
+                updated.getEvaluatedAt() != null ? updated.getEvaluatedAt().toLocalDate() : null);
     }
 
     private void calculateEvaluationRequired(QualityRecord qualityRecord) {
