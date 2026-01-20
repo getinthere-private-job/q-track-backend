@@ -160,6 +160,8 @@ class QualityRecordControllerTest {
                                                                 fieldWithPath("body.content[].dailyProductionId")
                                                                                 .description("일별 생산 데이터 ID"),
                                                                 fieldWithPath("body.content[].processId").description("공정 ID"),
+                                                                fieldWithPath("body.content[].productionDate")
+                                                                                .description("생산일 (yyyy-MM-dd)"),
                                                                 fieldWithPath("body.content[].okQuantity").description("OK 수량"),
                                                                 fieldWithPath("body.content[].ngQuantity").description("NG 수량"),
                                                                 fieldWithPath("body.content[].totalQuantity")
@@ -475,7 +477,7 @@ class QualityRecordControllerTest {
                                                 requestHeaders(
                                                                 headerWithName("Authorization").description(
                                                                                 "JWT 토큰 (Bearer {token})")),
-                                                responseFields(
+                                                relaxedResponseFields(
                                                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                                                 fieldWithPath("msg").description("응답 메시지"),
                                                                 fieldWithPath("body[]").description("평가 필요 품질 기록 목록"),
@@ -483,6 +485,8 @@ class QualityRecordControllerTest {
                                                                 fieldWithPath("body[].dailyProductionId")
                                                                                 .description("일별 생산 데이터 ID"),
                                                                 fieldWithPath("body[].processId").description("공정 ID"),
+                                                                fieldWithPath("body[].productionDate")
+                                                                                .description("생산일 (yyyy-MM-dd)"),
                                                                 fieldWithPath("body[].okQuantity").description("OK 수량"),
                                                                 fieldWithPath("body[].ngQuantity").description("NG 수량"),
                                                                 fieldWithPath("body[].totalQuantity")

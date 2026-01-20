@@ -21,7 +21,7 @@ public class SystemCodeController {
 
     @GetMapping
     public ResponseEntity<Resp<List<SystemCodeResponse.List>>> findAll(
-            @RequestParam(required = false) String codeGroup
+            @RequestParam(value = "codeGroup", required = false) String codeGroup
     ) {
         List<SystemCodeResponse.List> response;
         if (codeGroup != null && !codeGroup.isEmpty()) {

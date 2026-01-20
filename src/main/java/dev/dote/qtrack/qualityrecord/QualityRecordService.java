@@ -45,6 +45,8 @@ public class QualityRecordService {
                         qr.getId(),
                         qr.getDailyProduction().getId(),
                         qr.getProcess().getId(),
+                        qr.getDailyProduction().getItem().getId(),
+                        qr.getDailyProduction().getProductionDate(),
                         qr.getOkQuantity(),
                         qr.getNgQuantity(),
                         qr.getTotalQuantity(),
@@ -55,26 +57,28 @@ public class QualityRecordService {
                 .toList();
     }
 
-    public Page<QualityRecordResponse.List> findAll(Pageable pageable, LocalDate productionDate, Integer year, Integer month) {
+    public Page<QualityRecordResponse.List> findAll(Pageable pageable, Long itemId, LocalDate productionDate, LocalDate startDate, LocalDate endDate, Integer year, Integer month) {
         // year와 month를 LocalDate 범위로 변환
-        LocalDate startDate = null;
-        LocalDate endDate = null;
+        LocalDate calculatedStartDate = startDate;
+        LocalDate calculatedEndDate = endDate;
         
         if (year != null && month != null) {
             // 특정 년월: 해당 월의 시작일 ~ 종료일
-            startDate = LocalDate.of(year, month, 1);
-            endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+            calculatedStartDate = LocalDate.of(year, month, 1);
+            calculatedEndDate = calculatedStartDate.withDayOfMonth(calculatedStartDate.lengthOfMonth());
         } else if (year != null) {
             // 특정 년도: 해당 년도의 시작일 ~ 종료일
-            startDate = LocalDate.of(year, 1, 1);
-            endDate = LocalDate.of(year, 12, 31);
+            calculatedStartDate = LocalDate.of(year, 1, 1);
+            calculatedEndDate = LocalDate.of(year, 12, 31);
         }
         
-        return qualityRecordRepository.findAllWithFilters(pageable, productionDate, startDate, endDate)
+        return qualityRecordRepository.findAllWithFilters(pageable, itemId, productionDate, calculatedStartDate, calculatedEndDate)
                 .map(qr -> new QualityRecordResponse.List(
                         qr.getId(),
                         qr.getDailyProduction().getId(),
                         qr.getProcess().getId(),
+                        qr.getDailyProduction().getItem().getId(),
+                        qr.getDailyProduction().getProductionDate(),
                         qr.getOkQuantity(),
                         qr.getNgQuantity(),
                         qr.getTotalQuantity(),
@@ -90,6 +94,8 @@ public class QualityRecordService {
                         qr.getId(),
                         qr.getDailyProduction().getId(),
                         qr.getProcess().getId(),
+                        qr.getDailyProduction().getItem().getId(),
+                        qr.getDailyProduction().getProductionDate(),
                         qr.getOkQuantity(),
                         qr.getNgQuantity(),
                         qr.getTotalQuantity(),

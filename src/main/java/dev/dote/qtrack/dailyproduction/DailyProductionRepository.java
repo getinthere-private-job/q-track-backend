@@ -19,9 +19,19 @@ public interface DailyProductionRepository extends JpaRepository<DailyProduction
     @Query("SELECT dp FROM DailyProduction dp JOIN FETCH dp.item")
     List<DailyProduction> findAllWithItem();
 
-    @Query(value = "SELECT dp FROM DailyProduction dp JOIN dp.item",
-            countQuery = "SELECT COUNT(dp) FROM DailyProduction dp")
-    Page<DailyProduction> findAllWithItemPageable(Pageable pageable);
+    @Query(value = "SELECT dp FROM DailyProduction dp JOIN dp.item i " +
+            "WHERE (:itemId IS NULL OR i.id = :itemId) " +
+            "AND (:startDate IS NULL OR dp.productionDate >= :startDate) " +
+            "AND (:endDate IS NULL OR dp.productionDate <= :endDate) " +
+            "ORDER BY dp.productionDate DESC, i.code ASC",
+            countQuery = "SELECT COUNT(dp) FROM DailyProduction dp JOIN dp.item i " +
+            "WHERE (:itemId IS NULL OR i.id = :itemId) " +
+            "AND (:startDate IS NULL OR dp.productionDate >= :startDate) " +
+            "AND (:endDate IS NULL OR dp.productionDate <= :endDate)")
+    Page<DailyProduction> findAllWithFilters(Pageable pageable,
+            @Param("itemId") Long itemId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 
     @Query("SELECT dp FROM DailyProduction dp JOIN FETCH dp.item WHERE dp.id = :id")
     Optional<DailyProduction> findByIdWithItem(@Param("id") Long id);

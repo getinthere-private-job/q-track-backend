@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,10 +31,13 @@ public class QualityRecordController {
     @GetMapping
     public ResponseEntity<Resp<Page<QualityRecordResponse.List>>> findAll(
             @PageableDefault(size = 20) Pageable pageable,
-            @RequestParam(required = false) LocalDate productionDate,
-            @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) Integer month) {
-        Page<QualityRecordResponse.List> response = qualityRecordService.findAll(pageable, productionDate, year, month);
+            @RequestParam(value = "itemId", required = false) Long itemId,
+            @RequestParam(value = "productionDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate productionDate,
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(value = "year", required = false) Integer year,
+            @RequestParam(value = "month", required = false) Integer month) {
+        Page<QualityRecordResponse.List> response = qualityRecordService.findAll(pageable, itemId, productionDate, startDate, endDate, year, month);
         return Resp.ok(response);
     }
 
@@ -95,8 +99,8 @@ public class QualityRecordController {
 
     @GetMapping("/statistics/by-process")
     public ResponseEntity<Resp<List<QualityRecordResponse.StatisticsByProcess>>> getNgRateByProcess(
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate) {
+            @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate) {
         List<QualityRecordResponse.StatisticsByProcess> response = qualityRecordService.getNgRateByProcess(startDate,
                 endDate);
         return Resp.ok(response);
@@ -104,8 +108,8 @@ public class QualityRecordController {
 
     @GetMapping("/statistics/by-item")
     public ResponseEntity<Resp<List<QualityRecordResponse.StatisticsByItem>>> getNgRateByItem(
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate) {
+            @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate) {
         List<QualityRecordResponse.StatisticsByItem> response = qualityRecordService.getNgRateByItem(startDate,
                 endDate);
         return Resp.ok(response);

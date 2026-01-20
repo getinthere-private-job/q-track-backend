@@ -34,8 +34,8 @@ public class DailyProductionService {
                 .toList();
     }
 
-    public Page<DailyProductionResponse.List> findAll(Pageable pageable) {
-        return dailyProductionRepository.findAllWithItemPageable(pageable)
+    public Page<DailyProductionResponse.List> findAll(Pageable pageable, Long itemId, LocalDate startDate, LocalDate endDate) {
+        return dailyProductionRepository.findAllWithFilters(pageable, itemId, startDate, endDate)
                 .map(dp -> new DailyProductionResponse.List(
                         dp.getId(),
                         dp.getItem().getId(),

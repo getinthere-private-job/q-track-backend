@@ -15,6 +15,11 @@ java {
 	}
 }
 
+// 파라미터 이름 보존 설정 (Spring MVC 파라미터 바인딩을 위해 필요)
+tasks.withType(JavaCompile) {
+	options.compilerArgs += ['-parameters']
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor

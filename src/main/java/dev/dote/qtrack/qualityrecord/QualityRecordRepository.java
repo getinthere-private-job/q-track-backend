@@ -13,55 +13,65 @@ import java.util.List;
 import java.util.Optional;
 
 public interface QualityRecordRepository extends JpaRepository<QualityRecord, Long> {
-    boolean existsByDailyProductionAndProcess(DailyProduction dailyProduction, Process process);
+        boolean existsByDailyProductionAndProcess(DailyProduction dailyProduction, Process process);
 
-    Optional<QualityRecord> findByDailyProductionAndProcess(DailyProduction dailyProduction, Process process);
+        Optional<QualityRecord> findByDailyProductionAndProcess(DailyProduction dailyProduction, Process process);
 
-    List<QualityRecord> findByDailyProduction(DailyProduction dailyProduction);
+        List<QualityRecord> findByDailyProduction(DailyProduction dailyProduction);
 
-    List<QualityRecord> findByEvaluationRequired(Boolean evaluationRequired);
+        List<QualityRecord> findByEvaluationRequired(Boolean evaluationRequired);
 
-    @Query("SELECT qr FROM QualityRecord qr " +
-            "JOIN FETCH qr.dailyProduction " +
-            "JOIN FETCH qr.process " +
-            "LEFT JOIN FETCH qr.evaluatedBy")
-    List<QualityRecord> findAllWithJoins();
+        @Query("SELECT qr FROM QualityRecord qr " +
+                        "JOIN FETCH qr.dailyProduction " +
+                        "JOIN FETCH qr.process " +
+                        "LEFT JOIN FETCH qr.evaluatedBy")
+        List<QualityRecord> findAllWithJoins();
 
-    @Query(value = "SELECT qr FROM QualityRecord qr " +
-            "JOIN qr.dailyProduction dp " +
-            "JOIN qr.process " +
-            "LEFT JOIN qr.evaluatedBy " +
-            "WHERE (:productionDate IS NULL OR dp.productionDate = :productionDate) " +
-            "AND (:startDate IS NULL OR dp.productionDate >= :startDate) " +
-            "AND (:endDate IS NULL OR dp.productionDate <= :endDate)",
-            countQuery = "SELECT COUNT(qr) FROM QualityRecord qr " +
-                    "JOIN qr.dailyProduction dp " +
-                    "WHERE (:productionDate IS NULL OR dp.productionDate = :productionDate) " +
-                    "AND (:startDate IS NULL OR dp.productionDate >= :startDate) " +
-                    "AND (:endDate IS NULL OR dp.productionDate <= :endDate)")
-    Page<QualityRecord> findAllWithFilters(Pageable pageable,
-                                           @Param("productionDate") LocalDate productionDate,
-                                           @Param("startDate") LocalDate startDate,
-                                           @Param("endDate") LocalDate endDate);
+        @Query(value = "SELECT qr FROM QualityRecord qr " +
+                        "JOIN qr.dailyProduction dp " +
+                        "JOIN dp.item i " +
+                        "JOIN qr.process p " +
+                        "LEFT JOIN qr.evaluatedBy " +
+                        "WHERE (:itemId IS NULL OR i.id = :itemId) " +
+                        "AND (:productionDate IS NULL OR dp.productionDate = :productionDate) " +
+                        "AND (:startDate IS NULL OR dp.productionDate >= :startDate) " +
+                        "AND (:endDate IS NULL OR dp.productionDate <= :endDate) " +
+                        "ORDER BY dp.productionDate DESC, i.code ASC, " +
+                        "CASE WHEN UPPER(p.code) = 'W' THEN 1 " +
+                        "WHEN UPPER(p.code) = 'P' THEN 2 " +
+                        "WHEN p.code = '검' THEN 3 " +
+                        "ELSE 4 END ASC", countQuery = "SELECT COUNT(qr) FROM QualityRecord qr " +
+                                        "JOIN qr.dailyProduction dp " +
+                                        "JOIN dp.item i " +
+                                        "WHERE (:itemId IS NULL OR i.id = :itemId) " +
+                                        "AND (:productionDate IS NULL OR dp.productionDate = :productionDate) " +
+                                        "AND (:startDate IS NULL OR dp.productionDate >= :startDate) " +
+                                        "AND (:endDate IS NULL OR dp.productionDate <= :endDate)")
+        Page<QualityRecord> findAllWithFilters(Pageable pageable,
+                        @Param("itemId") Long itemId,
+                        @Param("productionDate") LocalDate productionDate,
+                        @Param("startDate") LocalDate startDate,
+                        @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT qr FROM QualityRecord qr " +
-            "JOIN FETCH qr.dailyProduction " +
-            "JOIN FETCH qr.process " +
-            "LEFT JOIN FETCH qr.evaluatedBy " +
-            "WHERE qr.evaluationRequired = :evaluationRequired")
-    List<QualityRecord> findByEvaluationRequiredWithJoins(@Param("evaluationRequired") Boolean evaluationRequired);
+        @Query("SELECT qr FROM QualityRecord qr " +
+                        "JOIN FETCH qr.dailyProduction " +
+                        "JOIN FETCH qr.process " +
+                        "LEFT JOIN FETCH qr.evaluatedBy " +
+                        "WHERE qr.evaluationRequired = :evaluationRequired")
+        List<QualityRecord> findByEvaluationRequiredWithJoins(@Param("evaluationRequired") Boolean evaluationRequired);
 
-    @Query("SELECT qr FROM QualityRecord qr " +
-            "JOIN FETCH qr.dailyProduction " +
-            "JOIN FETCH qr.process " +
-            "LEFT JOIN FETCH qr.evaluatedBy " +
-            "WHERE qr.id = :id")
-    Optional<QualityRecord> findByIdWithJoins(@Param("id") Long id);
+        @Query("SELECT qr FROM QualityRecord qr " +
+                        "JOIN FETCH qr.dailyProduction " +
+                        "JOIN FETCH qr.process " +
+                        "LEFT JOIN FETCH qr.evaluatedBy " +
+                        "WHERE qr.id = :id")
+        Optional<QualityRecord> findByIdWithJoins(@Param("id") Long id);
 
-    @Query("SELECT qr FROM QualityRecord qr " +
-            "JOIN FETCH qr.dailyProduction dp " +
-            "JOIN FETCH qr.process " +
-            "WHERE (:startDate IS NULL OR dp.productionDate >= :startDate) " +
-            "AND (:endDate IS NULL OR dp.productionDate <= :endDate)")
-    List<QualityRecord> findByDateRange(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+        @Query("SELECT qr FROM QualityRecord qr " +
+                        "JOIN FETCH qr.dailyProduction dp " +
+                        "JOIN FETCH qr.process " +
+                        "WHERE (:startDate IS NULL OR dp.productionDate >= :startDate) " +
+                        "AND (:endDate IS NULL OR dp.productionDate <= :endDate)")
+        List<QualityRecord> findByDateRange(@Param("startDate") LocalDate startDate,
+                        @Param("endDate") LocalDate endDate);
 }

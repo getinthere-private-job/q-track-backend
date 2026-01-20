@@ -6,11 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.time.LocalDate;
 
 /**
  * 일별 생산 데이터 관리 API
@@ -25,8 +26,11 @@ public class DailyProductionController {
 
     @GetMapping
     public ResponseEntity<Resp<Page<DailyProductionResponse.List>>> findAll(
-            @PageableDefault(size = 20) Pageable pageable) {
-        Page<DailyProductionResponse.List> response = dailyProductionService.findAll(pageable);
+            @PageableDefault(size = 20, sort = "productionDate", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(value = "itemId", required = false) Long itemId,
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        Page<DailyProductionResponse.List> response = dailyProductionService.findAll(pageable, itemId, startDate, endDate);
         return Resp.ok(response);
     }
 
